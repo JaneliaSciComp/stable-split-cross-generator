@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block branding %}
+<div class="sscg-heading">
+  <h1>Stable Split Cross Generator {{ version }}</h1>
+</div>
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-light bg-light justify-content-end">
+      <a class="navbar-brand navbar-brand-left" href="{{ url_for('index') }}"> Home </a>
+      <a class="navbar-brand" href="{{ url_for('index') }}"> Admin </a>
+    </nav>
+{% endblock %}

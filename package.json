@@ -1,0 +1,24 @@
+{
+  "name": "stable-split-cross-generator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaneliaSciComp/stable-split-cross-generator.git"
+  },
+  "author": "Antje Kazimiers",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JaneliaSciComp/stable-split-cross-generator/issues"
+  },
+  "homepage": "https://github.com/JaneliaSciComp/stable-split-cross-generator#readme",
+  "dependencies": {
+    "bootstrap": "^4.1.1",
+    "flightplan": "^0.6.17",
+    "jquery": "^3.3.1"
+  }
+}
