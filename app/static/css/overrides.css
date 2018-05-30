@@ -1,7 +1,17 @@
 .sscg-heading {
-  margin-top: 2em;
+    margin-top: 2em;
 }
 
 .sscg-container {
     width: 80%;
+}
+
+.sscg-row {
+    margin-top: 1em;
+}
+
+.download-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
 }
