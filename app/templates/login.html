@@ -1,0 +1,12 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "branding.html" %}
+{% block content %}
+<div class="container-fluid sscg-container">
+    <div class="row">
+        <h3>Login</h3>
+        {% for field in form %}
+          {{ render_field(field) }}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
