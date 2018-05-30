@@ -1,5 +1,13 @@
 from wtforms import Form, TextField, PasswordField, validators
 
+class RegisterForm(Form):
+    username = TextField('Username', [validators.Required()])
+    password = PasswordField('Password', [validators.Required()])
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+        self.user = None
+
 class LoginForm(Form):
     username = TextField('Username', [validators.Required()])
     password = PasswordField('Password', [validators.Required()])

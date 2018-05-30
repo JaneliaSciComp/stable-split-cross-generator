@@ -1,14 +1,10 @@
 import json
 from flask import Flask
 from flask_admin import Admin
-from flask_login import LoginManager
 
 app = Flask(__name__) #app variable, an object of class FLask
+app.config.from_pyfile('sscg-config.cfg')
 from app import views
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "login"
 
 @app.context_processor
 def get_app_version():
