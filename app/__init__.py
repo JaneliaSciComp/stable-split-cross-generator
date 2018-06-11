@@ -1,6 +1,7 @@
 import json
 from flask import Flask
 from flask_admin import Admin
+from celery import Celery
 
 app = Flask(__name__) #app variable, an object of class FLask
 app.config.from_pyfile('sscg-config.cfg')
