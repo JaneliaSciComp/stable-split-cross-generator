@@ -1,37 +1,38 @@
-import ipdb
+import ipdb, pika, sys
 from flask import render_template, Flask, Response, redirect, url_for, request, session, abort
 from celery import Celery
-from app import app
-from app.settings import Settings
-from app.forms import LoginForm, RegisterForm
+from myapp import myapp
+from myapp.settings import Settings
+from myapp.forms import LoginForm, RegisterForm
 from flask_login import LoginManager
+from flask_pika import Pika as FPika
 
 login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager.init_app(myapp)
 login_manager.login_view = "login"
 
-app.config.from_pyfile('sscg-config.cfg')
-celery = Celery('tasks', backend='amqp', broker='amqp://')
+myapp.config.from_pyfile('sscg-config.cfg')
+celery = Celery('task', backend='amqp', broker='amqp://guest:guest@localhost:5672/')
 # celery = Celery(app.name, broker=app.config)
 # celery.conf.update(app.config)
 
 @celery.task
 def test(val1, val2):
-    print('celery task')
-    return 'test: ' + val1 + " " + val2
+    print('here the celery task goes in')
+    return 'another test'
 
-@app.route('/', methods=['GET','POST'])
+@myapp.route('/', methods=['GET','POST'])
 def home():
     # if not session.get('logged_in'):
     #     form = LoginForm()
     #     return render_template('login.html', form=form)
     return render_template('index.html')
 
-@app.route('/result', methods=['GET','POST'])
+@myapp.route('/result', methods=['GET','POST'])
 def result():
     return render_template('result.html')
 
-@app.route('/login', methods=['POST'])
+@myapp.route('/login', methods=['POST'])
 def login():
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
@@ -53,7 +54,7 @@ def login():
         return redirect(next or flask.url_for('index'))
     return render_template('login.html', form=form)
 
-@app.route('/register' , methods=['GET','POST'])
+@myapp.route('/register' , methods=['GET','POST'])
 def register():
     if request.method == 'GET':
         form = RegisterForm()
@@ -64,13 +65,18 @@ def register():
     flash('User successfully registered')
     return redirect(url_for('login'))
 
-@app.route('/celery' , methods=['GET','POST'])
+@myapp.route('/celery' , methods=['GET','POST'])
 def celery():
     task = test.delay(10, 20)
     print('task set')
-    task.get()
-    print('task got')
-    return 'new celery ' + task
+    if task.ready():
+        print('task completed')
+        return 'task completed'
+
+@myapp.route('/pika' , methods=['GET','POST'])
+def pika():
+    print('task is set')
+    return 'pika task'
 
 @login_manager.user_loader
 def load_user(id):
