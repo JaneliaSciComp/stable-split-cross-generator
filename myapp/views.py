@@ -1,4 +1,4 @@
-import ipdb, pika, sys
+import ipdb, pika, sys, os, subprocess
 from flask import render_template, Flask, Response, redirect, url_for, request, session, abort
 from celery import Celery
 from myapp import myapp
@@ -17,6 +17,22 @@ celery = Celery('task', backend='amqp', broker='amqp://guest:guest@localhost:567
 # celery.conf.update(app.config)
 
 @celery.task
+def compute_splits_task(lines, a_line):
+    ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
+    if not ecosystem_path.startswith('/'): # relative
+        ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
+
+    gen1_split_generator = os.path.join(ecosystem_path, 'gen1_split_generator.py')
+    # Call R, allow Rprofile.site file
+    cmd = "python {bin}".format(**{
+        'bin': gen1_split_generator
+    })
+    pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8')
+    stdout, stderr = pipe.communicate()
+    if stderr: # TODO check exit code, only raise exception when not 0
+        raise Exception(stderr)
+
+@celery.task
 def test(val1, val2):
     print('here the celery task goes in')
     return 'another test'
@@ -27,6 +43,7 @@ def home():
     #     form = LoginForm()
     #     return render_template('login.html', form=form)
     return render_template('index.html')
+
 
 @myapp.route('/result', methods=['GET','POST'])
 def result():
@@ -65,14 +82,13 @@ def register():
     flash('User successfully registered')
     return redirect(url_for('login'))
 
-@myapp.route('/celery' , methods=['GET','POST'])
-def celery():
-    task = test.delay(10, 20)
-    print('task set')
-    if task.ready():
-        print('task completed')
-        return 'task completed'
-    return 'test'
+@myapp.route('/compute_splits' , methods=['GET','POST'])
+def compute_splits():
+    lines = "lines"
+    a_line  = 'a_line'
+    task = compute_splits_task.delay(lines, a_line)
+    print(dir(task))
+    return 'task queued'
 
 @myapp.route('/pika' , methods=['GET','POST'])
 def pika():
