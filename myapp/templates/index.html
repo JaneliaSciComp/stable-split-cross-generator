@@ -5,13 +5,55 @@
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="exampleFormControlTextarea1">Line Names</label>
-                <textarea class="form-control rounded-0" id="exampleFormControlTextarea1" rows="20"></textarea> 
+                <textarea class="form-control rounded-0" rows="20" id="line-names">
+50384
+26759
+12596
+13875
+59775
+33945
+353
+38155
+59129
+10054
+21418
+56657
+470
+7174
+45642
+56643
+32411
+4422
+26841
+14706
+25526
+21418
+8487
+65b07
+33b06
+21a10
+59g11
+48e01
+89b04
+137b01
+43679
+28450
+13590
+65317
+10670
+46147
+58443
+28450
+45108
+55D12
+60b11
+40c01</textarea>
             </div>
          </div>
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="exampleFormControlTextarea2">A-Line</label>
-                <textarea class="form-control rounded-0" id="exampleFormControlTextarea2" rows="1"></textarea>
+                <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
             </div>
             <div class="form-group form-inline">
                 <button type="button" class="form-control btn btn-info" name="generate-crosses" id="generate-crosses" value="Generate crosses">Generate crosses</button>
@@ -20,10 +62,35 @@
     </div>
 </div>
 <script>
-     $(document).ready(function(){
+    $(document).ready(function(){
+        // collect all information to be send as POST request to backend
         $('#generate-crosses').on('click', function(event){
-            location = '/result';
-        });
-     })
+            let data = {
+                'lnames': $('#line-names')[0].value,
+                'aline': $('#a-line')[0].value
+            };
+            const jsonData = JSON.stringify(data);
+            const url = window.origin + '/result';
+            const myRequest = new Request(url, {
+                method: 'POST',
+                body: jsonData,
+                headers: {
+                    'content-type': 'application/json'
+                },
+            });
+
+            fetch(myRequest).then(
+                function(response) {
+                    if (response.status == 200) {
+                        console.log('success');
+                    }
+                    else {
+                        console.log('error');
+                    }
+                }
+            );
+        }
+    )
+    })
 </script>
 {% endblock %}

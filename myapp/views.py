@@ -24,18 +24,15 @@ def compute_splits_task(lines, a_line):
 
     gen1_split_generator = os.path.join(ecosystem_path, 'gen1_split_generator.py')
     # Call R, allow Rprofile.site file
-    cmd = "python {bin}".format(**{
-        'bin': gen1_split_generator
-    })
+    if not lines:
+        cmd = "python {bin} --file line-names.txt".format(**{
+            'bin': gen1_split_generator
+        })
     pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8')
     stdout, stderr = pipe.communicate()
     if stderr: # TODO check exit code, only raise exception when not 0
         raise Exception(stderr)
 
-@celery.task
-def test(val1, val2):
-    print('here the celery task goes in')
-    return 'another test'
 
 @myapp.route('/', methods=['GET','POST'])
 def home():
@@ -47,6 +44,12 @@ def home():
 
 @myapp.route('/result', methods=['GET','POST'])
 def result():
+    if request.method == 'POST':
+        print(request.json)
+        obj = open('line-names.txt', 'w')
+        obj.write(request.json['lnames'])
+        obj.close()
+        compute_splits_task.delay(None,None)
     return render_template('result.html')
 
 @myapp.route('/login', methods=['POST'])
@@ -89,11 +92,6 @@ def compute_splits():
     task = compute_splits_task.delay(lines, a_line)
     print(dir(task))
     return 'task queued'
-
-@myapp.route('/pika' , methods=['GET','POST'])
-def pika():
-    print('task is set')
-    return 'pika task'
 
 @login_manager.user_loader
 def load_user(id):
