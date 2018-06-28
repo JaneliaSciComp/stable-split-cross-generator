@@ -72,6 +72,7 @@ def celery():
     if task.ready():
         print('task completed')
         return 'task completed'
+    return 'test'
 
 @myapp.route('/pika' , methods=['GET','POST'])
 def pika():
