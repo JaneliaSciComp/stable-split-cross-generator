@@ -2,19 +2,23 @@
 {% block content %}
 <div class="container-fluid sscg-container">
     <div class="row sscg-row">
-        <h3>Result</h3>
+        <h3>Download</h3>
         <div class="col-lg-9 col-md-9 col-sm-9">
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-3">
             <div class=download-buttons>
                 <div class="form-group form-inline">
-                    <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">File 1</button>
+                    <a href="{{ url_for('download', file=file1) }}">
+                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file1 }}</button>
+                    </a>
                 </div>
                 <div class="form-group form-inline">
-                    <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">File 2</button>
+                    <a href="{{ url_for('download', file=file2) }}">
+                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file2 }}</button>
+                    </a>
                 </div>
                 <div class="form-group form-inline">
-                    <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">File 3</button>
+                    <a href="{{ url_for('download', file=file3) }}">
+                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file3 }}</button>
+                    </a>
                 </div>
             </div>
         </div>

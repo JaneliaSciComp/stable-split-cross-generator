@@ -47,7 +47,8 @@
 45108
 55D12
 60b11
-40c01</textarea>
+40c01
+                </textarea>
             </div>
          </div>
          <div class="col-lg-6 col-md-6 col-sm-6">
@@ -56,41 +57,55 @@
                 <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
             </div>
             <div class="form-group form-inline">
-                <button type="button" class="form-control btn btn-info" name="generate-crosses" id="generate-crosses" value="Generate crosses">Generate crosses</button>
+                <!-- <button type="button" class="form-control btn btn-info" name="generate-crosses" id="generate-crosses" value="Generate crosses">Generate crosses</button> -->
+                <button class="form-control btn btn-info"><a id="generate_link" href="{{ url_for('compute_splits', linenames='linenames', aline='aline') }}">Generate Crosses</a></button>
             </div>
          </div>
     </div>
 </div>
 <script>
     $(document).ready(function(){
-        // collect all information to be send as POST request to backend
-        $('#generate-crosses').on('click', function(event){
+        $('#generate_link').on('mousedown', function(event){
             let data = {
                 'lnames': $('#line-names')[0].value,
                 'aline': $('#a-line')[0].value
             };
-            const jsonData = JSON.stringify(data);
-            const url = window.origin + '/result';
-            const myRequest = new Request(url, {
-                method: 'POST',
-                body: jsonData,
-                headers: {
-                    'content-type': 'application/json'
-                },
-            });
-
-            fetch(myRequest).then(
-                function(response) {
-                    if (response.status == 200) {
-                        console.log('success');
-                    }
-                    else {
-                        console.log('error');
-                    }
-                }
-            );
-        }
-    )
+            // const newlink = this.href.replace('[linenames]',data['lnames']).replace('[aline]',data['[aline]']);
+            const newlink = this.href.replace('linenames',data['lnames']).replace('aline',data['[aline]']);
+            console.log(newlink);
+            this.href= newlink;
+        });
     })
+
+    // $(document).ready(function(){
+    //     collect all information to be send as POST request to backend
+    //     $('#generate-crosses').on('click', function(event){
+    //         let data = {
+    //             'lnames': $('#line-names')[0].value,
+    //             'aline': $('#a-line')[0].value
+    //         };
+    //         const jsonData = JSON.stringify(data);
+    //         const url = window.origin + '/compute_splits';
+    //         const myRequest = new Request(url, {
+    //             method: 'POST',
+    //             body: jsonData,
+    //             headers: {
+    //                 'content-type': 'application/json'
+    //             },
+    //         });
+
+    //         fetch(myRequest).then(
+    //             function(response) {
+    //                 if (response.status == 200) {
+    //                     console.log('success');
+    //                 }
+    //                 else {
+    //                     console.log('error');
+    //                 }
+    //             }
+    //         );
+    //     }
+    //     )
+    // })
 </script>
 {% endblock %}
