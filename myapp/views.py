@@ -120,8 +120,9 @@ def register():
     flash('User successfully registered')
     return redirect(url_for('login'))
 
+@myapp.route('/compute_splits/' , methods=['GET','POST'])
 @myapp.route('/compute_splits/<linenames>/<aline>' , methods=['GET','POST'])
-def compute_splits(linenames,aline):
+def compute_splits(linenames = None, aline = None):
     print(linenames)
     print(aline)
     if linenames:
