@@ -22,6 +22,7 @@ client = MongoClient(mongosettings)
 
 @celery.task
 def compute_splits_task(linenames, aline):
+    print('in task');
     ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
     if not ecosystem_path.startswith('/'): # relative
         ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
@@ -64,18 +65,20 @@ def home():
     return render_template('index.html')
 
 
+# this function is called within the POST success as a change of window.locate => no POST request
 @myapp.route('/result', methods=['GET','POST'])
 def result():
     if request.method == 'POST':
-        print(request.json)
+        file1 = '58443-customName.crosses.txt'
+        file2 = '58443-customName.flycore.xls'
+        file3 = '58443-customName.no_crosses.txt'
         obj = open('line-names.txt', 'w')
         obj.write(request.json['lnames'])
         obj.close()
         compute_splits_task.delay(None,None)
+    else:
+        return 'no result'
 
-    file1 = '58443-customName.crosses.txt'
-    file2 = '58443-customName.flycore.xls'
-    file3 = '58443-customName.no_crosses.txt'
     return render_template('result.html', file1=file1, file2=file2, file3=file3)
 
 @myapp.route("/download/<file>")
@@ -124,12 +127,16 @@ def register():
 @myapp.route('/compute_splits/' , methods=['GET','POST'])
 @myapp.route('/compute_splits/<linenames>/<aline>' , methods=['GET','POST'])
 def compute_splits(linenames = None, aline = None):
-    print(linenames)
-    print(aline)
+    if not linenames and not aline:
+        data = request.json
+        task = compute_splits_task.delay(
+                data['lnames'],
+                data['aline'])
     if linenames:
-        task = compute_splits_task.delay(linenames, aline)
+        compute_splits_task.delay(linenames, aline)
     # print(dir(task))
-    return redirect(url_for('result'))
+    # return redirect(url_for('result'))
+    return ''
 
 @login_manager.user_loader
 def load_user(id):
