@@ -13,6 +13,7 @@ login_manager.init_app(myapp)
 login_manager.login_view = "login"
 
 myapp.config.from_pyfile('sscg-config.cfg')
+myapp.url_map.strict_slashes = False
 celery = Celery('task', backend='amqp', broker='amqp://guest:guest@localhost:5672/')
 
 # Mongo client
