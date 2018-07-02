@@ -50,3 +50,9 @@ Start the celery script
 ```bash
 $ python run-celery.py
 ```
+
+## Database
+
+```bash
+mongo --host [your mongodb host]:[mongodb port]
+```

@@ -1,13 +1,18 @@
 .sscg-heading {
-    margin-top: 2em;
+  margin-top: 2em;
 }
 
 .sscg-container {
-    width: 80%;
+  width: 80%;
 }
 
 .sscg-row {
-    margin-top: 1em;
+  margin-top: 1em;
+}
+
+.sscg-label {
+    font-size: 0.9em;
+    min-width: 4em;
 }
 
 .download-buttons {

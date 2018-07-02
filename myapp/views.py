@@ -20,6 +20,8 @@ celery = Celery('task', backend='amqp', broker='amqp://guest:guest@localhost:567
 mongosettings = 'mongodb://' + myapp.config['MONGODB_SETTINGS']['host'] + ':' + str(myapp.config['MONGODB_SETTINGS']['port']) + '/'
 client = MongoClient(mongosettings)
 
+sscg = client.stablesplit
+
 @celery.task
 def compute_splits_task(linenames, aline):
     print('in task');
@@ -68,16 +70,13 @@ def home():
 # this function is called within the POST success as a change of window.locate => no POST request
 @myapp.route('/result', methods=['GET','POST'])
 def result():
-    if request.method == 'POST':
-        file1 = '58443-customName.crosses.txt'
-        file2 = '58443-customName.flycore.xls'
-        file3 = '58443-customName.no_crosses.txt'
-        obj = open('line-names.txt', 'w')
-        obj.write(request.json['lnames'])
-        obj.close()
-        compute_splits_task.delay(None,None)
-    else:
-        return 'no result'
+    message = sscg.message
+    m = message.find_one()
+    ipdb.set_trace()
+
+    file1 = '58443-customName.crosses.txt'
+    file2 = '58443-customName.flycore.xls'
+    file3 = '58443-customName.no_crosses.txt'
 
     return render_template('result.html', file1=file1, file2=file2, file3=file3)
 

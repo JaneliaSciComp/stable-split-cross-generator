@@ -1,7 +1,15 @@
 {% extends "branding.html" %}
 {% block content %}
 <div class="container-fluid sscg-container">
+    <br/>
+    <div>
+        <div class="form-group form-inline">
+            <label class="sscg-label">Name: </label>
+            <input type="text" class="form-control lightsheet-input" name="job-name" id="jobId" value="Convert_{{ date_now | safe | strftime_short }}">
+        </div>
+    </div>
     <div class="row">
+         <!-- Name field -->
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="exampleFormControlTextarea1">Line Names</label>
