@@ -42,3 +42,11 @@ If you're done with coding, you can deactivate the environment with
 ```bash
 $ deactivate
 ```
+
+## Setup
+
+Start the celery script
+
+```bash
+$ python run-celery.py
+```
