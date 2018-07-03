@@ -5,7 +5,7 @@
     <div>
         <div class="form-group form-inline">
             <label class="sscg-label">Name: </label>
-            <input type="text" class="form-control lightsheet-input" name="job-name" id="jobId" value="Convert_{{ date_now | safe | strftime_short }}">
+            <input type="text" class="form-control lightsheet-input" name="job-name" id="task_name" value="Convert_{{ date_now | safe | strftime_short }}">
         </div>
     </div>
     <div class="row">
@@ -105,7 +105,8 @@
         $('#generate-crosses').on('click', function(event){
             let data = {
                 'lnames': $('#line-names')[0].value,
-                'aline': $('#a-line')[0].value
+                'aline': $('#a-line')[0].value,
+                'task_name': $('#task_name')[0].value
             };
             const jsonData = JSON.stringify(data);
             const url = window.origin + '/compute_splits';
@@ -117,18 +118,28 @@
                 },
             });
 
-            fetch(myRequest).then(
-                function(response) {
-                    if (response.status == 200) {
-                        window.location = window.origin + '/result';
-                    }
-                    else {
-                        console.log('error');
-                    }
+            fetch(myRequest)
+            .then(function(response) {
+                if (response.status == 200) {
+                    return response.json();
                 }
-            );
-        }
-        )
-    })
+                throw new Error("Unexpected response status: " + response.status);
+            })
+            .then(function(data) {
+                console.log(data);
+                debugger;
+                if (!data.task_id) {
+                    throw new Error("Unexpected response format: no task ID found");
+                }
+                if (data.status !== 'QUEUED') {
+                    throw new Error("Task couldn't be queued. Its status is: " + data.status);
+                }
+                window.location = window.origin + '/result/' + data['task_id'];
+            })
+            .catch(function(error) {
+                console.log("Error: " + error);
+            });
+        })
+    });
 </script>
 {% endblock %}
