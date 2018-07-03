@@ -49,11 +49,12 @@ def compute_splits_task(linenames, aline, task_name):
             })
 
     pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8')
-    cmd_dir = "mkdir {task_name}".format(**{
+    cmd_dir = "mkdir ./{task_name}/; cd {task_name}".format(**{
                 'task_name': compute_splits_task.request.id
             })
     print(cmd_dir)
-    subprocess.call([cmd_dir])
+    pipe = subprocess.Popen(cmd_dir, shell=True, stdin=subprocess.PIPE, encoding='utf8')
+    #subprocess.call([cmd_dir])
     stdout, stderr = pipe.communicate(input=linenames)
 
     if pipe.returncode != 0: # TODO check exit code, only raise exception when not 0
@@ -61,7 +62,7 @@ def compute_splits_task(linenames, aline, task_name):
         sscg.messages.insert_one({
             'task_id': compute_splits_task.request.id,
             'task_name': task_name,
-            'date': datatime.now(),
+            'date': datetime.now(),
             'message': stderr,
             'status': 'ERROR'
             })
@@ -71,7 +72,7 @@ def compute_splits_task(linenames, aline, task_name):
         sscg.messages.insert_one({
             'task_id': compute_splits_task.request.id,
             'task_name': task_name,
-            'date': datatime.now(),
+            'date': datetime.now(),
             'message': 'success',
             'status': 'SUCCESS'
             })
