@@ -1,4 +1,4 @@
-import ipdb, pika, sys, os, subprocess, json
+import ipdb, pika, sys, os, subprocess, json, logging
 from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory, jsonify
 from datetime import datetime
 from celery import Celery
@@ -8,6 +8,8 @@ from myapp.forms import LoginForm, RegisterForm
 from flask_login import LoginManager
 from flask_pika import Pika as FPika
 from pymongo import MongoClient
+
+logger = logging.getLogger(__file__)
 
 login_manager = LoginManager()
 login_manager.init_app(myapp)
@@ -32,34 +34,43 @@ def compute_splits_task(linenames, aline, task_name):
     gen1_split_generator = os.path.join(ecosystem_path, 'gen1_split_generator.py')
     # Call R, allow Rprofile.site file
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
+    # linenames = None
     cmd = None
     if not linenames:
-        cmd = "python {bin} --file line-names.txt --debug".format(**{
+        print('1 -- no linenames')
+        cmd = "python {bin} --file ../line-names.txt --debug".format(**{
             'bin': gen1_split_generator
         })
     else:
         if aline:
+            print('2 -- linenames and aline')
             cmd = "{bin} --aline {aline} --debug".format(**{
                 'bin': gen1_split_generator,
                 'aline': aline
             })
         else:
+            print('3 -- linenames but no aline')
             cmd = "{bin} --debug".format(**{
                 'bin': gen1_split_generator
             })
 
-    pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8')
-    cmd_dir = "mkdir ./{task_name}/; cd {task_name}".format(**{
-                'task_name': compute_splits_task.request.id
-            })
-    print(cmd_dir)
-    pipe = subprocess.Popen(cmd_dir, shell=True, stdin=subprocess.PIPE, encoding='utf8')
-    #subprocess.call([cmd_dir])
-    stdout, stderr = pipe.communicate(input=linenames)
+    task_id = compute_splits_task.request.id
 
+    output_dir = os.path.join(myapp.root_path, 'output', task_id)
+    logger.info('output dir: ' + output_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8', cwd=output_dir)
+    stdout, stderr = pipe.communicate(input=linenames)
+    
+    #subprocess.call([cmd_dir])
+    client_fork = MongoClient(mongosettings)
+    sscg_fork = client_fork.stablesplit
+    
     if pipe.returncode != 0: # TODO check exit code, only raise exception when not 0
         print('An exception ocurred')
-        sscg.messages.insert_one({
+        sscg_fork.messages.insert_one({
             'task_id': compute_splits_task.request.id,
             'task_name': task_name,
             'date': datetime.now(),
@@ -69,7 +80,7 @@ def compute_splits_task(linenames, aline, task_name):
         raise Exception(stderr)
     else:
         print('Success')
-        sscg.messages.insert_one({
+        sscg_fork.messages.insert_one({
             'task_id': compute_splits_task.request.id,
             'task_name': task_name,
             'date': datetime.now(),
@@ -154,6 +165,7 @@ def register():
     flash('User successfully registered')
     return redirect(url_for('login'))
 
+# Route to call the task to compute stable splits
 @myapp.route('/compute_splits' , methods=['GET','POST'])
 @myapp.route('/compute_splits/<linenames>/<aline>/' , methods=['GET','POST'])
 def compute_splits(linenames=None, aline=None, task_name=None):
@@ -172,6 +184,15 @@ def compute_splits(linenames=None, aline=None, task_name=None):
         'task_id': task.task_id
     }
     return jsonify(result)
+
+# Route to query the database, if the task ran successfully already
+@myapp.route('/polling/<task_id>' , methods=['GET'])
+def polling(task_id):
+    count = sscg.messages.find({ "$and": [ { 'task_id': { "$eq": task_id } }, { 'status': { "$eq": 'SUCCESS' } } ] }).count()
+    if count == 1: # task ran successfully
+        return jsonify('success')
+    else:
+        return jsonify('failure')
 
 @login_manager.user_loader
 def load_user(id):

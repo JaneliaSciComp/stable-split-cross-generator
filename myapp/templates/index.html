@@ -13,8 +13,7 @@
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="exampleFormControlTextarea1">Line Names</label>
-                <textarea class="form-control rounded-0" rows="20" id="line-names">
-50384
+                <textarea class="form-control rounded-0" rows="20" id="line-names">50384
 26759
 12596
 13875
@@ -26,36 +25,6 @@
 10054
 21418
 56657
-470
-7174
-45642
-56643
-32411
-4422
-26841
-14706
-25526
-21418
-8487
-65b07
-33b06
-21a10
-59g11
-48e01
-89b04
-137b01
-43679
-28450
-13590
-65317
-10670
-46147
-58443
-28450
-45108
-55D12
-60b11
-40c01
                 </textarea>
             </div>
          </div>
@@ -77,29 +46,6 @@
     </div>
 </div>
 <script>
-    // $(document).ready(function(){
-    //     $('#generate_link').on('mousedown', function(event){
-    //         const lnames = $('#line-names')[0].value ? $('#line-names')[0].value : null;
-    //         const aline = $('#a-line')[0].value !== "" ? $('#a-line')[0].value : null;
-
-    //         // const newlink = this.href.replace('[linenames]',data['lnames']).replace('[aline]',data['[aline]']);
-    //         let newlink = this.href;
-    //         if (lnames) {
-    //             newlink = newlink.replace('linenames', lnames);
-    //         }
-    //         else {
-    //             newlink = newlink.replace('/linenames', '');
-    //         }
-    //         if (aline) {
-    //             newlink = newlink.replace('aline', aline);
-    //         }
-    //         else {
-    //             newlink = newlink.replace('/aline', '');
-    //         }
-    //         this.href= newlink;
-    //     });
-    // })
-
     $(document).ready(function(){
         // collect all information to be send as POST request to backend
         $('#generate-crosses').on('click', function(event){
@@ -110,7 +56,8 @@
             };
             const jsonData = JSON.stringify(data);
             const url = window.origin + '/compute_splits';
-            const myRequest = new Request(url, {
+
+            const calculateRequest = new Request(url, {
                 method: 'POST',
                 body: jsonData,
                 headers: {
@@ -118,7 +65,7 @@
                 },
             });
 
-            fetch(myRequest)
+            fetch(calculateRequest)
             .then(function(response) {
                 if (response.status == 200) {
                     return response.json();
@@ -133,7 +80,22 @@
                 if (data.status !== 'QUEUED') {
                     throw new Error("Task couldn't be queued. Its status is: " + data.status);
                 }
-                window.location = window.origin + '/result/' + data['task_id'];
+                function timeout() {
+                    setTimeout(function () {
+                        console.log('set timeout');
+                        fetch(window.origin + '/polling/' + data['task_id'])
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(myJson) {
+                            console.log(myJson);
+                            // window.location = window.origin + '/result/' + data['task_id'];
+                        });
+                        timeout();
+                    }, 3000);
+                }
+
+                timeout();
             })
             .catch(function(error) {
                 console.log("Error: " + error);
