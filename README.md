@@ -55,4 +55,8 @@ $ python run-celery.py
 
 ```bash
 mongo --host [your mongodb host]:[mongodb port]
+show dbs
+use stable-split
+db.getCollectionNames()
+db.createCollection('messages')
 ```

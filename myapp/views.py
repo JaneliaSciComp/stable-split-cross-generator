@@ -1,5 +1,6 @@
-import ipdb, pika, sys, os, subprocess
-from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory
+import ipdb, pika, sys, os, subprocess, json
+from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory, jsonify
+from datetime import datetime
 from celery import Celery
 from myapp import myapp
 from myapp.settings import Settings
@@ -23,8 +24,7 @@ client = MongoClient(mongosettings)
 sscg = client.stablesplit
 
 @celery.task
-def compute_splits_task(linenames, aline):
-    print('in task');
+def compute_splits_task(linenames, aline, task_name):
     ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
     if not ecosystem_path.startswith('/'): # relative
         ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
@@ -39,24 +39,42 @@ def compute_splits_task(linenames, aline):
         })
     else:
         if aline:
-            cmd = "printf {linenames} | {bin} --aline {aline} --debug".format(**{
-                'linenames': linenames,
+            cmd = "{bin} --aline {aline} --debug".format(**{
                 'bin': gen1_split_generator,
                 'aline': aline
             })
         else:
-            cmd = "printf {linenames} | {bin} --debug".format(**{
-                'linenames': linenames,
+            cmd = "{bin} --debug".format(**{
                 'bin': gen1_split_generator
             })
-    print('command ' + cmd)
+
     pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8')
-    stdout, stderr = pipe.communicate()
-    print('stdout {0}'.format(stdout))
-    print('stderr {0}'.format(stderr))
-    if stderr: # TODO check exit code, only raise exception when not 0
+    cmd_dir = "mkdir {task_name}".format(**{
+                'task_name': compute_splits_task.request.id
+            })
+    print(cmd_dir)
+    subprocess.call([cmd_dir])
+    stdout, stderr = pipe.communicate(input=linenames)
+
+    if pipe.returncode != 0: # TODO check exit code, only raise exception when not 0
         print('An exception ocurred')
+        sscg.messages.insert_one({
+            'task_id': compute_splits_task.request.id,
+            'task_name': task_name,
+            'date': datatime.now(),
+            'message': stderr,
+            'status': 'ERROR'
+            })
         raise Exception(stderr)
+    else:
+        print('Success')
+        sscg.messages.insert_one({
+            'task_id': compute_splits_task.request.id,
+            'task_name': task_name,
+            'date': datatime.now(),
+            'message': 'success',
+            'status': 'SUCCESS'
+            })
 
 
 @myapp.route('/', methods=['GET','POST'])
@@ -68,17 +86,17 @@ def home():
 
 
 # this function is called within the POST success as a change of window.locate => no POST request
+@myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
-def result():
+def result(task_id = None):
     message = sscg.message
     m = message.find_one()
-    ipdb.set_trace()
 
     file1 = '58443-customName.crosses.txt'
     file2 = '58443-customName.flycore.xls'
     file3 = '58443-customName.no_crosses.txt'
 
-    return render_template('result.html', file1=file1, file2=file2, file3=file3)
+    return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
 
 @myapp.route("/download/<file>")
 def download(file):
@@ -89,6 +107,18 @@ def download(file):
             file,
             as_attachment=True
         )
+
+@myapp.route("/test")
+def test():
+    ipdb.set_trace()
+    sscg.messages.insert_one({
+            'task_id': 'test',
+            'task_name': 'test',
+            'date': datetime.now(),
+            'message': 'success',
+            'status': 'SUCCESS'
+            })
+    return 'test'
 
 @myapp.route('/login', methods=['POST'])
 def login():
@@ -123,19 +153,24 @@ def register():
     flash('User successfully registered')
     return redirect(url_for('login'))
 
-@myapp.route('/compute_splits/' , methods=['GET','POST'])
-@myapp.route('/compute_splits/<linenames>/<aline>' , methods=['GET','POST'])
-def compute_splits(linenames = None, aline = None):
+@myapp.route('/compute_splits' , methods=['GET','POST'])
+@myapp.route('/compute_splits/<linenames>/<aline>/' , methods=['GET','POST'])
+def compute_splits(linenames=None, aline=None, task_name=None):
     if not linenames and not aline:
         data = request.json
         task = compute_splits_task.delay(
                 data['lnames'],
-                data['aline'])
+                data['aline'],
+                data['task_name']
+            )
     if linenames:
-        compute_splits_task.delay(linenames, aline)
-    # print(dir(task))
-    # return redirect(url_for('result'))
-    return ''
+        compute_splits_task.delay(linenames, aline, task_name)
+
+    result = {
+        'status': 'QUEUED',
+        'task_id': task.task_id
+    }
+    return jsonify(result)
 
 @login_manager.user_loader
 def load_user(id):
