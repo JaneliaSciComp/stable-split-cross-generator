@@ -1,0 +1,19 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "branding.html" %}
+{% block content %}
+    {% if session['logged_in'] %}
+        <p>You're logged in already!</p>
+    {% else %}
+        <form action="/login" method="POST">
+            <div class="container-fluid sscg-container">
+                <div class="row">
+                    <h3>Register</h3>
+                    {% for field in form %}
+                      {{ render_field(field) }}
+                    {% endfor %}
+                     <input type="submit" value="Register">
+                </div>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

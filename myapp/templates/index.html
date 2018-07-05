@@ -1,0 +1,139 @@
+{% extends "branding.html" %}
+{% block content %}
+<div class="container-fluid sscg-container">
+    <br/>
+    <div>
+        <div class="form-group form-inline">
+            <label class="sscg-label">Name: </label>
+            <input type="text" class="form-control lightsheet-input" name="job-name" id="task_name" value="Gen1_{{ date_now | safe | strftime_short }}">
+        </div>
+    </div>
+    <div class="row">
+         <!-- Name field -->
+         <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Line Names</label>
+                <textarea class="form-control rounded-0" rows="20" id="line-names">50384
+50384
+26759
+12596
+13875
+59775
+33945
+353
+38155
+59129
+10054
+21418
+56657
+470
+7174
+45642
+56643
+32411
+4422
+26841
+14706
+25526
+21418
+8487
+65b07
+33b06
+21a10
+59g11
+48e01
+89b04
+137b01
+43679
+28450
+13590
+65317
+10670
+46147
+58443
+28450
+45108
+55D12
+60b11
+40c01</textarea>
+            </div>
+         </div>
+         <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea2">A-Line</label>
+                <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
+            </div>
+            <div class="form-group form-inline">
+                <button type="button" class="form-control btn btn-info" name="generate-crosses" id="generate-crosses" value="Generate crosses">Generate crosses</button>
+                <!-- <a id="generate_link" href="{{ url_for('compute_splits', linenames='linenames', aline='aline') }}"><button class="form-control btn btn-info">Generate Crosses</button></a> -->
+            </div>
+            <!-- https://www.tutorialspoint.com/flask/flask_file_uploading.htm -->
+            <form action = "http://localhost:5000/uploader" method = "POST"enctype = "multipart/form-data">
+             <input type = "file" name = "file" />
+             <input type = "submit"/>
+            </form>
+         </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        // collect all information to be send as POST request to backend
+        $('#generate-crosses').on('click', function(event){
+            let data = {
+                'lnames': $('#line-names')[0].value,
+                'aline': $('#a-line')[0].value,
+                'task_name': $('#task_name')[0].value
+            };
+            const jsonData = JSON.stringify(data);
+            const url = window.origin + '/compute_splits';
+
+            const calculateRequest = new Request(url, {
+                method: 'POST',
+                body: jsonData,
+                headers: {
+                    'content-type': 'application/json'
+                },
+            });
+
+            fetch(calculateRequest)
+            .then(function(response) {
+                if (response.status == 200) {
+                    return response.json();
+                }
+                throw new Error("Unexpected response status: " + response.status);
+            })
+            .then(function(data) {
+                console.log(data);
+                if (!data.task_id) {
+                    throw new Error("Unexpected response format: no task ID found");
+                }
+                if (data.status !== 'QUEUED') {
+                    throw new Error("Task couldn't be queued. Its status is: " + data.status);
+                }
+
+                console.log(data.task_id);
+                window.location = window.origin + '/result/' + data['task_id'];
+                // function timeout() {
+                //     setTimeout(function () {
+                //         console.log(data['task_id']);
+                //         fetch(window.origin + '/polling/' + data['task_id'])
+                //         .then(function(response) {
+                //             return response.json();
+                //         })
+                //         .then(function(myJson) {
+                //             console.log(myJson);
+                //             // window.location = window.origin + '/result/' + data['task_id'];
+                //         });
+                //         timeout();
+                //     }, 3000);
+                // }
+
+                // timeout();
+            })
+            .catch(function(error) {
+                console.log("Error: " + error);
+            });
+        })
+    });
+</script>
+{% endblock %}

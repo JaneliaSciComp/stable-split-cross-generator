@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block branding %}
+<div class="sscg-heading">
+  <h1>Gen1 Split Generator {{ version }}</h1>
+</div>
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-light bg-light justify-content-start">
+      <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
+      <a class="navbar-brand" href="{{ url_for('login') }}"> Login </a>
+      <a class="navbar-brand" href="{{ url_for('home') }}"> Admin </a>
+    </nav>
+{% endblock %}

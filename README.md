@@ -42,3 +42,21 @@ If you're done with coding, you can deactivate the environment with
 ```bash
 $ deactivate
 ```
+
+## Setup
+
+Start the celery script
+
+```bash
+$ python run-celery.py
+```
+
+## Database
+
+```bash
+mongo --host [your mongodb host]:[mongodb port]
+show dbs
+use stablesplit
+db.getCollectionNames()
+db.createCollection('messages')
+```
