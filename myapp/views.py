@@ -56,7 +56,7 @@ def compute_splits_task(linenames, aline, task_name):
 
     task_id = compute_splits_task.request.id
 
-    output_dir = os.path.join(myapp.root_path, 'output', task_id)
+    output_dir = os.path.join(myapp.root_path, 'static/output', task_id)
     logger.info('output dir: ' + output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -103,7 +103,7 @@ def home():
 @myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id = None):
-    files = os.listdir(os.path.join(myapp.root_path, 'output' , task_id))
+    files = os.listdir(os.path.join(myapp.root_path, 'static/output' , task_id))
     if len(files) > 0:
         message = sscg.message
         m = message.find_one()
@@ -117,37 +117,11 @@ def result(task_id = None):
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file):
     path = os.path.join(myapp.static_folder, 'output', task_id)
-    print(path)
     return send_from_directory(
             path,
             file,
             as_attachment=True
         )
-
-# @myapp.route("/download/<task_id>/<file>", methods=['GET','POST'])
-# def download(file, task_id):
-#     if file is None or task_id is None:
-#         self.Error(400)
-#     try:
-#         print(file)
-#         print(task_id)
-#         path = os.path.join(file, task_id)
-#         return send_file(path, as_attachment=False)
-#     except Exception as e:
-#         self.log.exception(e)
-#         self.Error(400)
-
-@myapp.route("/test")
-def test():
-    ipdb.set_trace()
-    sscg.messages.insert_one({
-            'task_id': 'test',
-            'task_name': 'test',
-            'date': datetime.now(),
-            'message': 'success',
-            'status': 'SUCCESS'
-            })
-    return 'test'
 
 @myapp.route('/login', methods=['POST'])
 def login():
