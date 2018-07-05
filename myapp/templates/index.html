@@ -80,22 +80,25 @@
                 if (data.status !== 'QUEUED') {
                     throw new Error("Task couldn't be queued. Its status is: " + data.status);
                 }
-                function timeout() {
-                    setTimeout(function () {
-                        console.log('set timeout');
-                        fetch(window.origin + '/polling/' + data['task_id'])
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(myJson) {
-                            console.log(myJson);
-                            // window.location = window.origin + '/result/' + data['task_id'];
-                        });
-                        timeout();
-                    }, 3000);
-                }
 
-                timeout();
+                console.log(data.task_id);
+                window.location = window.origin + '/result/' + data['task_id'];
+                // function timeout() {
+                //     setTimeout(function () {
+                //         console.log(data['task_id']);
+                //         fetch(window.origin + '/polling/' + data['task_id'])
+                //         .then(function(response) {
+                //             return response.json();
+                //         })
+                //         .then(function(myJson) {
+                //             console.log(myJson);
+                //             // window.location = window.origin + '/result/' + data['task_id'];
+                //         });
+                //         timeout();
+                //     }, 3000);
+                // }
+
+                // timeout();
             })
             .catch(function(error) {
                 console.log("Error: " + error);

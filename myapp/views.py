@@ -63,11 +63,11 @@ def compute_splits_task(linenames, aline, task_name):
 
     pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8', cwd=output_dir)
     stdout, stderr = pipe.communicate(input=linenames)
-    
+
     #subprocess.call([cmd_dir])
     client_fork = MongoClient(mongosettings)
     sscg_fork = client_fork.stablesplit
-    
+
     if pipe.returncode != 0: # TODO check exit code, only raise exception when not 0
         print('An exception ocurred')
         sscg_fork.messages.insert_one({
@@ -88,6 +88,8 @@ def compute_splits_task(linenames, aline, task_name):
             'status': 'SUCCESS'
             })
 
+    os.killpg(os.getpgid(pipe.pid), signal.SIGTERM)
+
 
 @myapp.route('/', methods=['GET','POST'])
 def home():
@@ -101,21 +103,25 @@ def home():
 @myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id = None):
-    message = sscg.message
-    m = message.find_one()
+    print('task id: ' + task_id)
+    files = os.listdir(os.path.join(myapp.root_path, 'output' , task_id))
+    # ipdb.set_trace()
+    if len(files) > 0:
+        message = sscg.message
+        m = message.find_one()
+        file1 = files[0]
+        file2 = files[1]
+        file3 = files[2]
+        return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
+    else:
+        return 'no result yet'
 
-    file1 = '58443-customName.crosses.txt'
-    file2 = '58443-customName.flycore.xls'
-    file3 = '58443-customName.no_crosses.txt'
-
-    return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
-
-@myapp.route("/download/<file>")
-def download(file):
-    myfile = os.path.join(os.path.dirname(myapp.root_path), file)
-    print('myfile ' + myfile)
+@myapp.route("/download/<task_id>/<file>")
+def download(file, task_id):
+    path = os.path.join(os.path.dirname(myapp.root_path), 'output', task_id)
+    print('current path: ' + path)
     return send_from_directory(
-            os.path.dirname(myapp.root_path),
+            os.path.dirname(path),
             file,
             as_attachment=True
         )
