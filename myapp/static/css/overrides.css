@@ -16,7 +16,11 @@
 }
 
 .download-buttons {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.download-buttons div {
+  margin-right: 25px;
 }

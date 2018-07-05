@@ -5,7 +5,7 @@ from flask_admin import Admin
 from celery import Celery
 from datetime import datetime
 
-myapp = Flask(__name__) #app variable, an object of class FLask
+myapp = Flask(__name__, static_folder='static') #app variable, an object of class FLask
 myapp.config.from_pyfile('sscg-config.cfg')
 
 admin=Admin(myapp)

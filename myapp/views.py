@@ -103,9 +103,7 @@ def home():
 @myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id = None):
-    print('task id: ' + task_id)
     files = os.listdir(os.path.join(myapp.root_path, 'output' , task_id))
-    # ipdb.set_trace()
     if len(files) > 0:
         message = sscg.message
         m = message.find_one()
@@ -117,14 +115,27 @@ def result(task_id = None):
         return 'no result yet'
 
 @myapp.route("/download/<task_id>/<file>")
-def download(file, task_id):
-    path = os.path.join(os.path.dirname(myapp.root_path), 'output', task_id)
-    print('current path: ' + path)
+def download(task_id, file):
+    path = os.path.join(myapp.static_folder, 'output', task_id)
+    print(path)
     return send_from_directory(
-            os.path.dirname(path),
+            path,
             file,
             as_attachment=True
         )
+
+# @myapp.route("/download/<task_id>/<file>", methods=['GET','POST'])
+# def download(file, task_id):
+#     if file is None or task_id is None:
+#         self.Error(400)
+#     try:
+#         print(file)
+#         print(task_id)
+#         path = os.path.join(file, task_id)
+#         return send_file(path, as_attachment=False)
+#     except Exception as e:
+#         self.log.exception(e)
+#         self.Error(400)
 
 @myapp.route("/test")
 def test():
