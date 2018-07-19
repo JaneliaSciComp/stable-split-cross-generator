@@ -6,7 +6,6 @@ from myapp import myapp
 from myapp.settings import Settings
 from myapp.forms import LoginForm, RegisterForm
 from flask_login import LoginManager
-from flask_pika import Pika as FPika
 from pymongo import MongoClient
 
 logger = logging.getLogger(__file__)
