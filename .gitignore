@@ -11,3 +11,4 @@ myapp/lightsheet-config.cfg
 myapp/sscg-config.cfg
 node_modules
 package-lock.json
+myapp/libs/ImagingEcosystem
