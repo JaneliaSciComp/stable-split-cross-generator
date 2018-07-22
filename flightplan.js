@@ -3,7 +3,7 @@ var plan = require('flightplan');
 var config = {
   srcDir: './stable-split-cross-generator',  // location on the remote server
   projectDir: '/opt/projects/stablesplit',  // location on the remote server
-  pythonPath: '/usr/local/bin/python3.6',
+  pythonPath: '/usr/bin/python3',
   keepReleases: 3,
   username: 'kazimiersa',
   root: 'root'
@@ -12,6 +12,7 @@ var config = {
 plan.target('local', {
   host: 'localhost',
   username: config.username,
+  privateKey: '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -22,6 +23,7 @@ plan.target('local', {
 plan.target('production', {
   host: 'stable-split',
   username: config.username,
+  privateKey: '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -94,7 +96,7 @@ plan.remote('deploy',function (remote) {
 
 plan.remote('deploy', function(remote) {
   remote.log('Create virtualenv');
-  remote.exec('cd ' + config.projectDir + '/current' + '; virtualenv env --no-site-packages -p ' + config.pythonPath);
+  remote.exec('cd ' + config.projectDir + '/current' + '; /groups/scicompsoft/home/kazimiersa/.local/bin/virtualenv env --no-site-packages -p ' + config.pythonPath);
 });
 
 plan.remote('deploy', function(remote) {
@@ -104,31 +106,9 @@ plan.remote('deploy', function(remote) {
 });
 
 plan.remote('deploy', function(remote) {
-  remote.log('Copy over settings.py');
-  remote.exec('cp ' + config.projectDir + '/settings.py ' + config.projectDir + '/current/app/');
+  remote.log('Copy over sscg-config.cfg');
+  remote.exec('cp ' + config.projectDir + '/sscg-config.cfg ' + config.projectDir + '/current/myapp/');
 });
-
-plan.remote('deploy', function(remote) {
-  remote.log('Copy over lightsheet-config.cfg');
-  remote.exec('cp ' + config.projectDir + '/lightsheet-config.cfg ' + config.projectDir + '/current/app/');
-});
-
-plan.remote('deploy', function(remote) {
-  remote.log('Copy over lightsheet.sock');
-  remote.exec('cp ' + config.projectDir + '/lightsheet.sock ' + config.projectDir + '/current/');
-});
-
-// plan.remote('deploy', function(remote)
-//   remote.log('Set owners and permissions');
-//   remote.sudo('chmod g+w /opt/projects/lightsheet/current', {user: config.root});
-//   remote.sudo('chown kazimiersa:nginx /opt/projects/lightsheet/current', {user: config.root});
-// });
-
-// plan.remote('deploy', function(remote) {
-//   remote.log('Restart services...');
-//   remote.sudo('systemctl stop lightsheet');
-//   remote.sudo('systemctl start lightsheet');
-// });
 
 plan.remote('rollback', function(remote) {
   remote.log('Rolling back release');
