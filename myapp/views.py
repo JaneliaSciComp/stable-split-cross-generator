@@ -25,7 +25,7 @@ client = MongoClient(mongosettings)
 sscg = client.stablesplit
 
 @celery.task
-def compute_splits_task(linenames, aline, task_name):
+def compute_splits_task(linenames, aline, task_name, username):
     ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
     if not ecosystem_path.startswith('/'): # relative
         ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
@@ -35,23 +35,19 @@ def compute_splits_task(linenames, aline, task_name):
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
     # linenames = None
     cmd = None
-    if not linenames:
-        print('1 -- no linenames')
-        cmd = "python {bin} --file ../line-names.txt --debug".format(**{
-            'bin': gen1_split_generator
+    if aline:
+        print('2 -- linenames and aline')
+        cmd = "{bin} --aline {aline} --debug --name {username}".format(**{
+            'bin': gen1_split_generator,
+            'aline': aline,
+            'username': username
         })
     else:
-        if aline:
-            print('2 -- linenames and aline')
-            cmd = "{bin} --aline {aline} --debug".format(**{
-                'bin': gen1_split_generator,
-                'aline': aline
-            })
-        else:
-            print('3 -- linenames but no aline')
-            cmd = "{bin} --debug".format(**{
-                'bin': gen1_split_generator
-            })
+        print('3 -- linenames but no aline')
+        cmd = "{bin} --debug --name {username}".format(**{
+            'bin': gen1_split_generator,
+            'username': username
+        })
 
     task_id = compute_splits_task.request.id
 
@@ -157,17 +153,23 @@ def register():
 
 # Route to call the task to compute stable splits
 @myapp.route('/compute_splits' , methods=['GET','POST'])
-@myapp.route('/compute_splits/<linenames>/<aline>/' , methods=['GET','POST'])
-def compute_splits(linenames=None, aline=None, task_name=None):
-    if not linenames and not aline:
-        data = request.json
-        task = compute_splits_task.delay(
-                data['lnames'],
-                data['aline'],
-                data['task_name']
-            )
-    if linenames:
-        compute_splits_task.delay(linenames, aline, task_name)
+@myapp.route('/compute_splits/<username>' , methods=['GET','POST'])
+#@myapp.route('/compute_splits/<linenames>/<aline>/' , methods=['GET','POST'])
+def compute_splits(username = None):
+    data = request.json
+    print('verify data')
+    print(data['lnames'])
+    print(data['aline'])
+    print(data['task_name'])
+    print(username)
+    print('verify data end')
+
+    task = compute_splits_task.delay(
+            data['lnames'],
+            data['aline'],
+            data['task_name'],
+            username
+        )
 
     result = {
         'status': 'QUEUED',

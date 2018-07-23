@@ -10,6 +10,6 @@ myapp/utils.pyc
 myapp/settings.py
 myapp/lightsheet-config.cfg
 myapp/sscg-config.cfg
+myapp/static/output
 node_modules
-package-lock.json
 myapp/libs/ImagingEcosystem

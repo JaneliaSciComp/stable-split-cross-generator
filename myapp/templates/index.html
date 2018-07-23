@@ -51,10 +51,15 @@
             let data = {
                 'lnames': $('#line-names')[0].value,
                 'aline': $('#a-line')[0].value,
-                'task_name': $('#task_name')[0].value
+                'task_name': $('#task-name')[0].value
             };
+            var userInput = $('#user-name')[0];
+            var user = null;
+            if (userInput) {
+                user = userInput.value;
+            }
             const jsonData = JSON.stringify(data);
-            const url = window.origin + '/compute_splits';
+            const url = window.origin + '/compute_splits/' + user;
 
             const calculateRequest = new Request(url, {
                 method: 'POST',
@@ -72,15 +77,12 @@
                 throw new Error("Unexpected response status: " + response.status);
             })
             .then(function(data) {
-                console.log(data);
                 if (!data.task_id) {
                     throw new Error("Unexpected response format: no task ID found");
                 }
                 if (data.status !== 'QUEUED') {
                     throw new Error("Task couldn't be queued. Its status is: " + data.status);
                 }
-
-                console.log(data.task_id);
                 window.location = window.origin + '/result/' + data['task_id'];
                 // function timeout() {
                 //     setTimeout(function () {
@@ -104,6 +106,9 @@
             });
         })
 
+        /*
+            Make sure, button to generate crosses is only enabled if a valid user name is entered
+        */
         var userConfigUrl = null;
         {%  if userUrl is defined %}
             userConfigUrl = "{{ userUrl|safe }}";
