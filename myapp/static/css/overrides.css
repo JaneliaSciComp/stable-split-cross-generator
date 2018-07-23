@@ -12,7 +12,7 @@
 
 .sscg-label {
     font-size: 0.9em;
-    min-width: 4em;
+    min-width: 6em;
 }
 
 .download-buttons {
@@ -23,4 +23,8 @@
 
 .download-buttons div {
   margin-right: 25px;
+}
+
+#task_name {
+  min-width: 30em;
 }
