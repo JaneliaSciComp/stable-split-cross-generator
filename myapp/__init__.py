@@ -4,6 +4,7 @@ from flask import Flask
 from flask_admin import Admin
 from celery import Celery
 from datetime import datetime
+from myapp.settings import Settings
 
 myapp = Flask(__name__, static_folder='static') #app variable, an object of class FLask
 myapp.config.from_pyfile('sscg-config.cfg')
@@ -24,6 +25,10 @@ def get_app_version():
     data = json.load(package_data)
     package_data.close()
     return dict(version=data['version'])
+
+@myapp.context_processor
+def get_app_userUrl():
+  return dict(userUrl=Settings.users)
 
 @myapp.template_filter('strftime')
 def _jinja2_filter_datetime(date, fmt=None):

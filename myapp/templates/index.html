@@ -6,13 +6,13 @@
         <div class="col-lg-4 col-md-4 col-sm-4">
             <div class="form-group form-inline">
                 <label class="sscg-label">Job Name: </label>
-                <input type="text" class="form-control lightsheet-input" name="job-name" id="task_name" value="Gen1_{{ date_now | safe | strftime_short }}">
+                <input type="text" class="form-control sscg-input" name="job-name" id="task-name" value="Gen1_{{ date_now | safe | strftime_short }}">
             </div>
         </div>
         <div class="col-lg-8 col-md-8 col-sm-8">
             <div class="form-group form-inline">
                 <label class="sscg-label">User Name: </label>
-                <input type="text" class="form-control lightsheet-input" name="job-name" id="task_name" value="">
+                <input type="text" class="form-control sscg-input" name="user-name" id="user-name" value="">
             </div>
         </div>
     </div>
@@ -43,6 +43,9 @@
 </div>
 <script>
     $(document).ready(function(){
+
+        $('#generate-crosses').attr("disabled", "disabled");
+
         // collect all information to be send as POST request to backend
         $('#generate-crosses').on('click', function(event){
             let data = {
@@ -95,6 +98,40 @@
                 // }
 
                 // timeout();
+            })
+            .catch(function(error) {
+                console.log("Error: " + error);
+            });
+        })
+
+        var userConfigUrl = null;
+        {%  if userUrl is defined %}
+            userConfigUrl = "{{ userUrl|safe }}";
+        {% endif %}
+
+        $('#user-name').on('keyup', function(event){
+            var checkName = this.value;
+
+            const userRequest = new Request(userConfigUrl + '/' + checkName, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                },
+            });
+
+            fetch(userRequest)
+            .then(function(response) {
+                if (response.status == 200) {
+                    return response.json();
+                }
+                $('#generate-crosses').attr("disabled", "disabled");
+                throw new Error("Unexpected response status: " + response.status);
+            })
+            .then(function(data) {
+                if (data['config'] && data['config']['id']) {
+                    // valid user found
+                    $('#generate-crosses').removeAttr('disabled');
+                }
             })
             .catch(function(error) {
                 console.log("Error: " + error);
