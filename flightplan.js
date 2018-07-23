@@ -106,6 +106,11 @@ plan.remote('deploy', function(remote) {
 });
 
 plan.remote('deploy', function(remote) {
+  remote.log('Copy over settings.py');
+  remote.exec('cp ' + config.projectDir + '/settings.py ' + config.projectDir + '/current/myapp/');
+});
+
+plan.remote('deploy', function(remote) {
   remote.log('Copy over sscg-config.cfg');
   remote.exec('cp ' + config.projectDir + '/sscg-config.cfg ' + config.projectDir + '/current/myapp/');
 });
