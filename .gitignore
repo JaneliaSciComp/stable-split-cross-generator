@@ -5,6 +5,7 @@ myapp/views.pyc
 myapp/__init__.pyc
 myapp/models.pyc
 myapp/settings.pyc
+myapp/settings.py
 myapp/utils.pyc
 myapp/settings.py
 myapp/lightsheet-config.cfg
