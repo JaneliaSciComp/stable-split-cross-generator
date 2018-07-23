@@ -3,7 +3,7 @@ var plan = require('flightplan');
 var config = {
   srcDir: './stable-split-cross-generator',  // location on the remote server
   projectDir: '/opt/projects/stablesplit',  // location on the remote server
-  pythonPath: '/usr/bin/python3',
+  pythonPath: '/usr/bin/python3.6',
   keepReleases: 3,
   username: 'kazimiersa',
   root: 'root'
@@ -92,6 +92,11 @@ plan.remote('deploy',function (remote) {
 
     remote.exec('rm -rf ' + releases.join(' '));
   }
+});
+
+plan.remote('deploy', function(remote) {
+  remote.log('Copy over ImagingEcosystem');
+  remote.exec('cp -r ' + config.projectDir + '/ImagingEcosystem ' + config.projectDir + '/current/myapp/libs/' );
 });
 
 plan.remote('deploy', function(remote) {
