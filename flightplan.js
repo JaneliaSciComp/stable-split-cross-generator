@@ -31,6 +31,25 @@ plan.target('production', {
   gitCheck: true
 });
 
+// Check if there are files that have not been committed to git. This stops
+// us from deploying code in an inconsistent state. It also prevents slapdash
+// changes from being deployed without a log of who added them in github. Not
+// fool proof, but better than nothing.
+plan.local('version', function(local) {
+  if (plan.runtime.target === 'production' || plan.runtime.options.gitCheck) {
+    local.log('checking git status...');
+    var result = local.exec('git status --porcelain', {silent: true});
+
+    if (result.stdout) {
+      local.log(result.stdout);
+      plan.abort('Uncommited files found, see list above');
+    }
+  } else {
+    local.log('skipping git check!!!');
+  }
+});
+
+
 plan.local('version', function(local) {
   local.log('create new version number and add as a git commit')
   var versionType = plan.runtime.options.argv.remain[1];
