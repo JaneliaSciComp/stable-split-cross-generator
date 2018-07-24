@@ -51,6 +51,12 @@ Install supervisord, in Ubuntu with
 sudo apt-get install supervisor
 ```
 
+Plus, install python dev libaries
+
+```bash
+apt-get install python3.6-dev pcre
+```
+
 Supervisor conf script is located in
 ```bash
 /etc/supervisord/conf.d/stable-split.conf

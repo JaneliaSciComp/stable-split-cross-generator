@@ -98,16 +98,24 @@ def home():
 @myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id = None):
-    files = os.listdir(os.path.join(myapp.root_path, 'static/output' , task_id))
-    if len(files) > 0:
-        message = sscg.message
-        m = message.find_one()
-        file1 = files[0]
-        file2 = files[1]
-        file3 = files[2]
-        return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
+    msgs = sscg.messages.find( { 'task_id': { '$eq': task_id } } )
+    if msgs.count() == 0:
+        return 'There is no result yet, please refresh the page.'
     else:
-        return 'no result yet'
+        for result_object in msgs[0:1]:
+            if result_object["status"] == "SUCCESS":
+                files = os.listdir(os.path.join(myapp.root_path, 'static/output' , task_id))
+                if len(files) > 0:
+                    message = sscg.message
+                    m = message.find_one()
+                    file1 = files[0]
+                    file2 = files[1]
+                    file3 = files[2]
+                    return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
+                else:
+                    return 'There was an error with the application'
+            else:
+                return 'There was an error with the application'
 
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file):
