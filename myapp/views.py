@@ -1,5 +1,5 @@
 import ipdb, sys, os, subprocess, json, logging, pwd
-from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory, jsonify
+from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory, jsonify, send_from_directory
 from datetime import datetime
 from celery import Celery
 from myapp import myapp
@@ -23,6 +23,11 @@ mongosettings = 'mongodb://' + myapp.config['MONGODB_SETTINGS']['host'] + ':' + 
 client = MongoClient(mongosettings)
 
 sscg = client.stablesplit
+
+@myapp.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(myapp.root_path, 'static'),
+                               'favicon.ico')
 
 @celery.task
 def compute_splits_task(linenames, aline, task_name, username):

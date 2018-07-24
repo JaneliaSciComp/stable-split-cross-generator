@@ -28,3 +28,7 @@
 #task-name {
   min-width: 30em;
 }
+
+#user-name {
+  max-width: 18em;
+}
