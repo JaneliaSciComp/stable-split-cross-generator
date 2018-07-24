@@ -45,6 +45,24 @@ $ deactivate
 
 ## Setup
 
+Install supervisord, in Ubuntu with
+
+```bash
+sudo apt-get install supervisor
+```
+
+Supervisor conf script is located in
+```bash
+/etc/supervisord/conf.d/stable-split.conf
+```
+
+After making changes, reread and reload the config file with
+```bash
+supervisorctl reread
+supervisorctl reload
+```
+
+
 Start the celery script
 
 ```bash
