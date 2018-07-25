@@ -12,7 +12,7 @@ var config = {
 plan.target('local', {
   host: 'localhost',
   username: config.username,
-  privateKey: '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy',
+  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -23,7 +23,7 @@ plan.target('local', {
 plan.target('production', {
   host: 'stable-split',
   username: config.username,
-  privateKey: '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy',
+  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -123,11 +123,18 @@ plan.remote('deploy', function(remote) {
   remote.exec('cd ' + config.projectDir + '/current' + '; /groups/scicompsoft/home/kazimiersa/.local/bin/virtualenv env --no-site-packages -p ' + config.pythonPath);
 });
 
+//plan.remote('deploy', function(remote) {
+//  remote.log('Run ldconfig to update library paths -- for uwsgi to work');
+//  // use pip9 due to bug reported here: https://stackoverflow.com/questions/49854465/pythonpip-install-bson-error
+//  remote.exec('ldconfig');
+//});
+
 plan.remote('deploy', function(remote) {
   remote.log('Install the requirements');
   // use pip9 due to bug reported here: https://stackoverflow.com/questions/49854465/pythonpip-install-bson-error
-  remote.exec('cd ' + config.projectDir + '/current' + '; source env/bin/activate; pip install -U "pip>=9,<10"; pip install -r requirements.txt');
+  remote.exec('cd ' + config.projectDir + '/current' + '; source env/bin/activate; pip install -U pip; pip install --no-cache-dir -r requirements.txt');
 });
+
 
 plan.remote('deploy', function(remote) {
   remote.log('Copy over settings.py');
