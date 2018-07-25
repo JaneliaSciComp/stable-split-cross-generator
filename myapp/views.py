@@ -1,5 +1,5 @@
-import ipdb, sys, os, subprocess, json, logging, pwd
-from flask import render_template, Flask, Response, redirect, url_for, request, session, abort, send_from_directory, jsonify, send_from_directory
+import ipdb, sys, os, subprocess, logging
+from flask import render_template, redirect, url_for, request, abort, send_from_directory, jsonify, send_from_directory
 from datetime import datetime
 from celery import Celery
 from myapp import myapp
@@ -56,7 +56,7 @@ def compute_splits_task(linenames, aline, task_name, username):
 
     task_id = compute_splits_task.request.id
 
-    output_dir = os.path.join(myapp.root_path, 'static/output', task_id)
+    output_dir = os.path.join(Settings.outputDir, task_id)
     logger.info('output dir: ' + output_dir)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -109,7 +109,7 @@ def result(task_id = None):
     else:
         for result_object in msgs[0:1]:
             if result_object["status"] == "SUCCESS":
-                files = os.listdir(os.path.join(myapp.root_path, 'static/output' , task_id))
+                files = os.listdir(os.path.join(Settings.outputDir, task_id))
                 if len(files) > 0:
                     message = sscg.message
                     m = message.find_one()
@@ -124,7 +124,7 @@ def result(task_id = None):
 
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file):
-    path = os.path.join(myapp.static_folder, 'output', task_id)
+    path = os.path.join(Settings.outputDir, task_id)
     return send_from_directory(
             path,
             file,
@@ -170,13 +170,6 @@ def register():
 #@myapp.route('/compute_splits/<linenames>/<aline>/' , methods=['GET','POST'])
 def compute_splits(username = None):
     data = request.json
-    print('verify data')
-    print(data['lnames'])
-    print(data['aline'])
-    print(data['task_name'])
-    print(username)
-    print('verify data end')
-
     task = compute_splits_task.delay(
             data['lnames'],
             data['aline'],
