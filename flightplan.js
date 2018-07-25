@@ -1,5 +1,11 @@
 var plan = require('flightplan');
 
+var globalVar = {}
+
+plan.local(function(transport) {
+  globalVar.key = transport.hostname() == 'kazimiersa-lm1' ? '/Users/kazimiersa/.ssh/id_rsa_deploy' : '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy';
+});
+
 var config = {
   srcDir: './stable-split-cross-generator',  // location on the remote server
   projectDir: '/opt/projects/stablesplit',  // location on the remote server
@@ -12,7 +18,7 @@ var config = {
 plan.target('local', {
   host: 'localhost',
   username: config.username,
-  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
+  privateKey: globalVar.key,
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -23,7 +29,7 @@ plan.target('local', {
 plan.target('production', {
   host: 'stable-split',
   username: config.username,
-  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
+  privateKey: globalVar.key,
   agent: process.env.SSH_AUTH_SOCK
 },
 {
