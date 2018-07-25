@@ -10,21 +10,27 @@
     <div class="row sscg-row">
         <div class="col-lg-9 col-md-9 col-sm-9">
             <div class=download-buttons>
+                {% if file1 is not none %}
                 <div class="form-group form-inline">
                     <a href="{{ url_for('download', task_id=task_id, file=file1) }}">
                         <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file1 }}</button>
                     </a>
                 </div>
+                {% endif %}
+                {% if file2 is not none %}
                 <div class="form-group form-inline">
                     <a href="{{ url_for('download', task_id=task_id, file=file2) }}">
                         <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file2 }}</button>
                     </a>
                 </div>
+                {% endif %}
+                {% if file3 is not none %}
                 <div class="form-group form-inline">
                     <a href="{{ url_for('download', task_id=task_id, file=file3) }}">
                         <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file3 }}</button>
                     </a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

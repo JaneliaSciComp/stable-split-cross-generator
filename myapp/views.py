@@ -105,17 +105,20 @@ def home():
 def result(task_id = None):
     msgs = sscg.messages.find( { 'task_id': { '$eq': task_id } } )
     if msgs.count() == 0:
-        return 'There is no result yet, please refresh the page.'
+        return render_template('processing.html')
     else:
         for result_object in msgs[0:1]:
             if result_object["status"] == "SUCCESS":
+                file1 = None
+                file2 = None
+                file3 = None
                 files = os.listdir(os.path.join(Settings.outputDir, task_id))
                 if len(files) > 0:
-                    message = sscg.message
-                    m = message.find_one()
                     file1 = files[0]
-                    file2 = files[1]
-                    file3 = files[2]
+                    if len(files) > 1:
+                        file2 = files[1]
+                    if len(files) > 2:
+                        file3 = files[2]
                     return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
                 else:
                     return 'There was an error with the application'
@@ -123,7 +126,7 @@ def result(task_id = None):
                 return 'There was an error with the application'
 
 @myapp.route("/download/<task_id>/<file>")
-def download(task_id, file):
+def download(task_id, file = None):
     path = os.path.join(Settings.outputDir, task_id)
     return send_from_directory(
             path,

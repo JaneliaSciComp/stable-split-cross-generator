@@ -1,0 +1,15 @@
+{% extends "branding.html" %}
+{% block content %}
+<div class="container-fluid sscg-container">
+    <div class="row sscg-row">
+       There is no result yet, please refresh the page.
+    </div>
+</div>
+<script>
+     $(document).ready(function(){
+        $('#generate-crosses').on('click', function(event){
+            console.log(this);
+        });
+     })
+</script>
+{% endblock %}
