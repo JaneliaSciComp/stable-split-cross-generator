@@ -31,11 +31,11 @@ def favicon():
 
 @celery.task
 def compute_splits_task(linenames, aline, task_name, username):
-    ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
-    if not ecosystem_path.startswith('/'): # relative
-        ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
+    # ecosystem_path = myapp.config['IMAGING_ECOSYSTEM']
+    # if not ecosystem_path.startswith('/'): # relative
+    #     ecosystem_path = os.path.join(myapp.root_path, ecosystem_path)
 
-    gen1_split_generator = os.path.join(ecosystem_path, 'gen1_split_generator.py')
+    gen1_split_generator = os.path.join(Settings.imagingEcoDir, 'gen1_split_generator.py')
     # Call R, allow Rprofile.site file
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
     # linenames = None
