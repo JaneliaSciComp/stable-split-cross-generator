@@ -42,16 +42,18 @@ def compute_splits_task(linenames, aline, task_name, username):
     cmd = None
     if aline:
         print('2 -- linenames and aline')
-        cmd = "{bin} --aline {aline} --debug --name {username}".format(**{
+        cmd = "{bin} --aline {aline} --debug --name {username} --vtcache {vtcache}".format(**{
             'bin': gen1_split_generator,
             'aline': aline,
-            'username': username
+            'username': username,
+            'vtcache': myapp.config['VTCACHE_PATH']
         })
     else:
         print('3 -- linenames but no aline')
-        cmd = "{bin} --debug --name {username}".format(**{
+        cmd = "{bin} --debug --name {username} --vtcache {vtcache}".format(**{
             'bin': gen1_split_generator,
-            'username': username
+            'username': username,
+            'vtcache': myapp.config['VTCACHE_PATH']
         })
 
     task_id = compute_splits_task.request.id
@@ -87,8 +89,6 @@ def compute_splits_task(linenames, aline, task_name, username):
             'message': 'success',
             'status': 'SUCCESS'
             })
-
-    os.killpg(os.getpgid(pipe.pid), signal.SIGTERM)
 
 
 @myapp.route('/', methods=['GET','POST'])

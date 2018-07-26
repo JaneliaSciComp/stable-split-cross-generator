@@ -59,7 +59,7 @@ apt-get install python3.6-dev pcre
 
 Supervisor conf script is located in
 ```bash
-/etc/supervisord/conf.d/stable-split.conf
+/etc/supervisor/conf.d/stable-split.conf
 ```
 
 After making changes, reread and reload the config file with
