@@ -48,13 +48,13 @@ $ deactivate
 Install supervisord, in Ubuntu with
 
 ```bash
-sudo apt-get install supervisor
+$ sudo apt-get install supervisor
 ```
 
 Plus, install python dev libaries
 
 ```bash
-apt-get install python3.6-dev pcre
+$ apt-get install python3.6-dev pcre
 ```
 
 Supervisor conf script is located in
@@ -64,23 +64,16 @@ Supervisor conf script is located in
 
 After making changes, reread and reload the config file with
 ```bash
-supervisorctl reread
-supervisorctl reload
+$ sudo supervisorctl reread; sudo supervisorctl update; sudo supervisorctl restart 'stable-split:'
 ```
 
-
-Start the celery script
-
-```bash
-$ python run-celery.py
-```
 
 ## Database
 
 ```bash
-mongo --host [your mongodb host]:[mongodb port]
-show dbs
-use stablesplit
-db.getCollectionNames()
-db.createCollection('messages')
+$ mongo --host [your mongodb host]:[mongodb port]
+> show dbs
+> use stablesplit
+> db.getCollectionNames()
+> db.createCollection('messages')
 ```

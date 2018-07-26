@@ -1,11 +1,5 @@
 var plan = require('flightplan');
 
-var globalVar = {}
-
-plan.local(function(transport) {
-  globalVar.key = transport.hostname() == 'kazimiersa-lm1' ? '/Users/kazimiersa/.ssh/id_rsa_deploy' : '/groups/scicompsoft/home/kazimiersa/.ssh/id_rsa_deploy';
-});
-
 var config = {
   srcDir: './stable-split-cross-generator',  // location on the remote server
   projectDir: '/opt/projects/stablesplit',  // location on the remote server
@@ -18,7 +12,7 @@ var config = {
 plan.target('local', {
   host: 'localhost',
   username: config.username,
-  privateKey: globalVar.key,
+  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -29,7 +23,7 @@ plan.target('local', {
 plan.target('production', {
   host: 'stable-split',
   username: config.username,
-  privateKey: globalVar.key,
+  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -43,7 +37,7 @@ plan.target('production', {
 // fool proof, but better than nothing.
 plan.local('version', function(local) {
   if (plan.runtime.target === 'production' || plan.runtime.options.gitCheck) {
-    local.log('checking git status...');
+    local.log('checking git status...')
     var result = local.exec('git status --porcelain', {silent: true});
 
     if (result.stdout) {
@@ -72,6 +66,8 @@ plan.local('version', function(local) {
 plan.local('deploy', function(local) {
   if (plan.runtime.target === 'production' || plan.runtime.options.gitCheck) {
     local.log('checking git status...');
+    local.log('tst ' + Object.keys(local));
+    local.log('tst ' + local.hostname());
     var result = local.exec('git status --porcelain', {silent: true});
 
     if (result.stdout) {
