@@ -76,10 +76,10 @@ def compute_splits_task(linenames, aline, task_name, username):
             'task_id': compute_splits_task.request.id,
             'task_name': task_name,
             'date': datetime.now(),
-            'message': stderr,
+            'message': stdout,
             'status': 'ERROR'
             })
-        raise Exception(stderr)
+        raise Exception(stdout)
     else:
         print('Success')
         sscg_fork.messages.insert_one({

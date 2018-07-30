@@ -115,10 +115,10 @@ plan.remote('deploy',function (remote) {
   }
 });
 
-plan.remote('deploy', function(remote) {
-  remote.log('Copy over ImagingEcosystem');
-  remote.exec('cp -r ' + config.projectDir + '/ImagingEcosystem ' + config.projectDir + '/current/myapp/libs/' );
-});
+// plan.remote('deploy', function(remote) {
+//   remote.log('Copy over ImagingEcosystem');
+//   remote.exec('cp -r ' + config.projectDir + '/ImagingEcosystem ' + config.projectDir + '/current/myapp/libs/' );
+// });
 
 plan.remote('deploy', function(remote) {
   remote.log('Create virtualenv');

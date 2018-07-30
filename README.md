@@ -67,7 +67,6 @@ After making changes, reread and reload the config file with
 $ sudo supervisorctl reread; sudo supervisorctl update; sudo supervisorctl restart 'stable-split:'
 ```
 
-
 ## Database
 
 ```bash
