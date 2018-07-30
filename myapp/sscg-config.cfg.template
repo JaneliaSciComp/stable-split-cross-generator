@@ -7,6 +7,7 @@ LDAP_SEARCH_BASE = 'OU=[..],DC=[..]'
 LDAP_LOGIN_VIEW = 'login'
 LDAP_PROVIDER_URL = '[ldap provider url]'
 LDAP_PROTOCOL_VERSION = 3
+VTCACHE_PATH = [path to the vtcache file]
 MONGODB_SETTINGS = {
     'db': 'split-generator',
     'host': [mongo host ulr],

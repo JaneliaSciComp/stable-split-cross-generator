@@ -14,3 +14,4 @@ myapp/static/output
 node_modules
 myapp/libs/ImagingEcosystem
 output
+cache

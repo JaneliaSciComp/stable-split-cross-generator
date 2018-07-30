@@ -40,20 +40,22 @@ def compute_splits_task(linenames, aline, task_name, username):
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
     # linenames = None
     cmd = None
+    vtcache_path =  myapp.config['VTCACHE_PATH'] + username + '_vt.cache'
+
     if aline:
         print('2 -- linenames and aline')
         cmd = "{bin} --aline {aline} --debug --name {username} --vtcache {vtcache}".format(**{
             'bin': gen1_split_generator,
             'aline': aline,
             'username': username,
-            'vtcache': myapp.config['VTCACHE_PATH']
+            'vtcache': vtcache_path
         })
     else:
         print('3 -- linenames but no aline')
         cmd = "{bin} --debug --name {username} --vtcache {vtcache}".format(**{
             'bin': gen1_split_generator,
             'username': username,
-            'vtcache': myapp.config['VTCACHE_PATH']
+            'vtcache': vtcache_path
         })
 
     task_id = compute_splits_task.request.id
