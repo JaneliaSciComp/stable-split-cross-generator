@@ -191,11 +191,13 @@ def compute_splits(username = None):
 # Route to query the database, if the task ran successfully already
 @myapp.route('/polling/<task_id>' , methods=['GET'])
 def polling(task_id):
-    count = sscg.messages.find({ "$and": [ { 'task_id': { "$eq": task_id } }, { 'status': { "$eq": 'SUCCESS' } } ] }).count()
-    if count == 1: # task ran successfully
-        return jsonify('success')
+    # count = sscg.messages.find({ "$and": [ { 'task_id': { "$eq": task_id } }, { 'status': { "$eq": 'SUCCESS' } } ] }).count()
+    messages = sscg.messages.find({ 'task_id': { "$eq": task_id }})
+    if messages.count() == 1: # task ran successfully
+        message = messages.next()
+        return jsonify(message['status'])
     else:
-        return jsonify('failure')
+        return jsonify('pending')
 
 @login_manager.user_loader
 def load_user(id):

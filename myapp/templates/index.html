@@ -45,43 +45,40 @@
 
     var landing = landing || {};
 
-    landing.checkCondition = function(resolve, reject) {
-        // If the condition is met, we're done! 
-        return result = fn();
-        if(result && result !== 'failure') {
-            console.log('redirect');
-            window.location = window.origin + '/result/' + data['task_id'];
-        }
-        // If the condition isn't met but the timeout hasn't elapsed, go again
-        else {
-            console.log('timeout');
-        }
-    };
+    // show an error string which disappears on its own
+    landing.addSpinningWheel = function() {
+        // https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif
+        $('body').prepend(`<div id="working-onit">
+                                <div class="overlay-haeding"><h4>Split results are being generated.</h4></div>
+                                <img src="{{ url_for('static', filename='files/Loading_icon.gif') }}" />
+                           </div>`);
+    },
 
-    landing.poll = function(fn, timeout, interval) {
-        console.log('in polling function');
-        var endTime = Number(new Date()) + (timeout || 2000);
-        interval = interval || 100;
-
-        var result = fn();
-
-        var checkCondition = function(resolve, reject) {
-            // If the condition is met, we're done! 
-            if(result && result !== 'failure') {
-               window.location = window.origin + '/result/' + data['task_id'];
-            }
-            // If the condition isn't met but the timeout hasn't elapsed, go again
-            // else if (Number(new Date()) < endTime) {
-            else if (result === 'failure'){
-                reject(new Error('timed out for ' + fn + ': ' + arguments));
-            }
-            else {
-               setTimeout(checkCondition, interval, resolve, reject);
-            }
-        };
-
-        return new Promise(checkCondition);
-    };
+    landing.fetchPolling = function(task_id){
+        var url = window.origin + '/polling/' + task_id;
+        console.log(url);
+        fetch(url)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(myJson) {
+                console.log(myJson);
+                if (myJson === 'SUCCESS') {
+                    window.location = window.origin + '/result/' + task_id;
+                } else if (myJson === 'pending') {
+                    console.log('pending');
+                    if ($('#working-onit').length === 0) {
+                        landing.addSpinningWheel();
+                    }
+                    setTimeout(landing.fetchPolling, 5000, task_id);
+                } else if (myJson === 'ERROR') {
+                    throw new Error("Task status is error");
+                }
+            })
+            .catch(function(error) {
+                console.log("Error: " + error);
+            });
+    }
 
     $(document).ready(function(){
         $('#generate-crosses').attr("disabled", "disabled");
@@ -123,42 +120,10 @@
                 if (data.status !== 'QUEUED') {
                     throw new Error("Task couldn't be queued. Its status is: " + data.status);
                 }
-                
 
-                // Usage:  ensure element is visible
-                landing.poll(function() {
-                   fetch(window.origin + '/polling/' + data['task_id'])
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(myJson) {
-                            console.log('result!' + myJson);
-                            return myJson
-                        });
-                }, 2000, 150).then(function() {
-                    // Polling done, now do something else!
-                }).catch(function() {
-                    // Polling timed out, handle the error!
-                });
-
-
-
-                // function timeout() {
-                //     setTimeout(function () {
-                //         console.log(data['task_id']);
-                //         fetch(window.origin + '/polling/' + data['task_id'])
-                //         .then(function(response) {
-                //             return response.json();
-                //         })
-                //         .then(function(myJson) {
-                //             console.log(myJson);
-                //             // window.location = window.origin + '/result/' + data['task_id'];
-                //         });
-                //         timeout();
-                //     }, 3000);
-                // }
-
-                // timeout();
+                if (data){
+                    landing.fetchPolling(data.task_id);
+                }
             })
             .catch(function(error) {
                 console.log("Error: " + error);
