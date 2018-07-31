@@ -32,3 +32,18 @@
 #user-name {
   max-width: 18em;
 }
+
+#working-onit {
+   background-color: white;
+   position: absolute;
+   z-index: 3;
+   left:40%;
+   top:20%;
+   margin: auto;
+   padding: 30px;
+   border: solid thin #DDDDDD;
+}
+
+.overlay-heading {
+  width: 80%;
+}
