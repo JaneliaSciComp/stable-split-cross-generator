@@ -49,8 +49,22 @@
     landing.addSpinningWheel = function() {
         // https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif
         $('body').prepend(`<div id="working-onit">
-                                <div class="overlay-haeding"><h4>Split results are being generated.</h4></div>
+                                <div class="overlay-heading"><h4>Split results are being generated.</h4></div>
                                 <img src="{{ url_for('static', filename='files/Loading_icon.gif') }}" />
+                           </div>`);
+    },
+
+    landing.removeError = function() {
+        $('#error-panel').remove();
+    },
+
+    // show an error string which disappears on its own
+    landing.showErrorPanel = function() {
+        // https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif
+        $('body').prepend(`<div id="error-panel">
+                                <div id="error-close" class="fa fa-window-close-o"  onclick="landing.removeError()"></div>
+                                <div class="overlay-heading"><h4>There was an error generating splits.</h4></div>
+                                <div class="error-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></div>
                            </div>`);
     },
 
@@ -72,6 +86,8 @@
                     }
                     setTimeout(landing.fetchPolling, 5000, task_id);
                 } else if (myJson === 'ERROR') {
+                    $('#working-onit').remove();
+                    landing.showErrorPanel();
                     throw new Error("Task status is error");
                 }
             })
@@ -81,6 +97,7 @@
     }
 
     $(document).ready(function(){
+
         $('#generate-crosses').attr("disabled", "disabled");
 
         // collect all information to be send as POST request to backend

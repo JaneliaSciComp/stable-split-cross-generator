@@ -1,6 +1,6 @@
+package-lock.json
 env
 myapp/__pycache__/
-.idea/
 myapp/views.pyc
 myapp/__init__.pyc
 myapp/models.pyc
@@ -15,3 +15,4 @@ node_modules
 myapp/libs/ImagingEcosystem
 output
 cache
+.idea/

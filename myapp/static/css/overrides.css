@@ -34,6 +34,19 @@
 }
 
 #working-onit {
+   min-height: 18em;
+   background-color: white;
+   position: absolute;
+   z-index: 3;
+   left:40%;
+   top:20%;
+   margin: auto;
+   padding: 30px;
+   border: solid thin #DDDDDD;
+}
+
+#error-panel {
+   min-height: 18em;
    background-color: white;
    position: absolute;
    z-index: 3;
@@ -45,5 +58,29 @@
 }
 
 .overlay-heading {
-  width: 80%;
+  margin-top: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error-icon {
+  font-size: 5em;
+  color: #555;
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+#error-close {
+  font-size: 1.5em;
+  float: right;
+  margin: 4px 5px 0 0;
+  color: #BBB;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+
+#error-close:hover {
+  color: #888;
 }
