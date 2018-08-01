@@ -1,7 +1,8 @@
-import ipdb, sys, os, subprocess, logging
+import ipdb, sys, os, subprocess, logging,  glob, time, datetime, shutil
 from flask import render_template, redirect, url_for, request, abort, send_from_directory, jsonify, send_from_directory
 from datetime import datetime
 from celery import Celery
+from celery.schedules import crontab
 from myapp import myapp
 from myapp.settings import Settings
 from myapp.forms import LoginForm, RegisterForm
@@ -28,6 +29,30 @@ sscg = client.stablesplit
 def favicon():
     return send_from_directory(os.path.join(myapp.root_path, 'static'),
                                'favicon.ico')
+
+@celery.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    # Test clean up job, run every 30 seconds
+    sender.add_periodic_task(30.0, cleanup_folders.s('cleanup'), name='cleanup folders')
+
+    # Executes every Monday morning at 6:00 a.m.
+    sender.add_periodic_task(
+        crontab(hour=6, minute=00, day_of_week=1),
+        cleanup_folders.s('cleanup'),
+    )
+
+@celery.task
+def cleanup_folders(arg):
+    path = glob.glob(Settings.outputDir + '/*')
+    now  = time.time()
+    now_str = datetime.fromtimestamp(now).strftime('%d-%m-%Y %H:%M:%S')
+    print(now_str)
+
+    # Delete all folders whichs are older than 10 days
+    for f in path:
+        if os.stat(f).st_mtime < now - (3 * 86400):
+            print(f)
+            shutil.rmtree(f)
 
 @celery.task
 def compute_splits_task(linenames, aline, task_name, username):

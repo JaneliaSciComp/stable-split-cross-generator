@@ -43,6 +43,21 @@ If you're done with coding, you can deactivate the environment with
 $ deactivate
 ```
 
+## Development
+
+To start celery from the command line, run
+
+```bash
+run_celery.py
+```
+
+or run the following commands:
+
+```bash
+$ celery -A myapp.views worker -l info
+$ celery -A myapp.views beat -l info
+```
+
 ## Setup
 
 Install supervisord, in Ubuntu with
