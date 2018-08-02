@@ -33,11 +33,11 @@ def favicon():
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     # Test clean up job, run every 30 seconds
-    sender.add_periodic_task(30.0, cleanup_folders.s('cleanup'), name='cleanup folders')
+    # sender.add_periodic_task(30.0, cleanup_folders.s('cleanup'), name='cleanup folders')
 
     # Executes every Monday morning at 6:00 a.m.
     sender.add_periodic_task(
-        crontab(hour=6, minute=00, day_of_week=1),
+        crontab(hour=6, minute=00, day_of_week=*),
         cleanup_folders.s('cleanup'),
     )
 
