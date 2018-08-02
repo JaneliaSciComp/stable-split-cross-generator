@@ -37,7 +37,7 @@ def setup_periodic_tasks(sender, **kwargs):
 
     # Executes every Monday morning at 6:00 a.m.
     sender.add_periodic_task(
-        crontab(hour=6, minute=00, day_of_week=*),
+        crontab(hour=6, minute=00, day_of_week='mon-fri'),
         cleanup_folders.s('cleanup'),
     )
 
