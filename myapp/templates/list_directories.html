@@ -1,0 +1,17 @@
+{% extends "branding.html" %}
+{% block content %}
+<div class="container-fluid sscg-container">
+    <div class="row sscg-row">
+        <h5>Available Tasks</h5>
+    </div>
+    <div class="row sscg-row">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+        {% if directories is not none %}
+            {% for dir in directories %}
+            <div><a href="{{ url_for('result', task_id=dir)}}">{{ dir }}</a></div>
+            {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

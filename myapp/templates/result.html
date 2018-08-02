@@ -1,50 +1,58 @@
 {% extends "branding.html" %}
+{% block navbar %}
+<nav class="navbar navbar-light bg-light">
+    <div class="justify-content-start">
+        <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
+        <a class="navbar-brand" href="{{ url_for('login') }}" style="display: none;"> Login </a>
+        <a class="navbar-brand" href="{{ url_for('home') }}" style="display: none;"> Admin </a>
+        <a class="navbar-brand" href="{{ url_for('result') }}"> Results </a>
+    </div>
+    <div class="navbar-brand task-id">Task ID: {{ task_id }}</div>
+</nav>
+{% endblock %}
 {% block content %}
 <div class="container-fluid sscg-container">
-    <div class="row">
-        <h4>Task ID: {{ task_id }}</h4>
-    </div>
-    <div class="row">
+    <div class="row sscg-row"></div>
+    <div class="row sscg-row">
         <h5>Download files</h5>
     </div>
     <div class="row sscg-row">
-        <div class="col-lg-9 col-md-9 col-sm-9">
+        <div class="col-lg-11 col-md-11 col-sm-11">
             <div class=download-buttons>
-                {% if file1 is not none %}
-                <div class="form-group form-inline">
-                    <a href="{{ url_for('download', task_id=task_id, file=file1) }}">
-                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file1 }}</button>
-                    </a>
-                </div>
-                {% endif %}
-                {% if file2 is not none %}
-                <div class="form-group form-inline">
-                    <a href="{{ url_for('download', task_id=task_id, file=file2) }}">
-                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file2 }}</button>
-                    </a>
-                </div>
-                {% endif %}
-                {% if file3 is not none %}
-                <div class="form-group form-inline">
-                    <a href="{{ url_for('download', task_id=task_id, file=file3) }}">
-                        <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ file3 }}</button>
-                    </a>
-                </div>
+                {% if content is not none %}
+                    {% for c in content %}
+                        <div class="form-group form-inline">
+                            <a href="{{ url_for('download', task_id=task_id, file=content.file) }}">
+                                <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ c.file }}</button>
+                            </a>
+                        </div>
+                    {% endfor %}
                 {% endif %}
             </div>
         </div>
     </div>
+    <div class="row sscg-row"></div>
+    <div class="row sscg-row">
+        <h5>Preview</h5>
+    </div>
+    <div class="row">
+        {% if content is not none %}
+            {% for c in content %}
+                {% if c.content is not none %}
+                    <div class="col-lg-4 col-md-4 col-sm-4">
+                        <h4>{{ c.file }}</h4>
+                        {% for line in c.content %}
+                            {{ line }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
     <div class="row sscg-row">
         <div class="form-group form-inline">
-            <button type="button" class="form-control btn btn-info" name="sendto-flycore" id="" value="" disabled="" style="display: none;>Send to FlyCore</button>
+            <button type="button" class="form-control btn btn-info" name="sendto-flycore" id="" value="" disabled="" style="display: none;">Send to FlyCore</button>
         </div>
     </div>
 </div>
-<script>
-     $(document).ready(function(){
-        $('#generate-crosses').on('click', function(event){
-            console.log(this);
-        });
-     })
-</script>
 {% endblock %}

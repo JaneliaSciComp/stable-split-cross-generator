@@ -80,7 +80,10 @@
   top: 3px;
 }
 
-
 #error-close:hover {
   color: #888;
+}
+
+.task-id {
+   right: 0;
 }

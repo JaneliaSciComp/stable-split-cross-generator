@@ -129,27 +129,36 @@ def home():
 @myapp.route('/result/<task_id>/' , methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id = None):
-    msgs = sscg.messages.find( { 'task_id': { '$eq': task_id } } )
-    if msgs.count() == 0:
-        return render_template('processing.html')
+    if task_id == None:
+        # list all tasks
+        directories = os.listdir(os.path.join(Settings.outputDir))
+        return render_template('list_directories.html', directories=directories)
     else:
-        for result_object in msgs[0:1]:
-            if result_object["status"] == "SUCCESS":
-                file1 = None
-                file2 = None
-                file3 = None
-                files = os.listdir(os.path.join(Settings.outputDir, task_id))
-                if len(files) > 0:
-                    file1 = files[0]
-                    if len(files) > 1:
-                        file2 = files[1]
-                    if len(files) > 2:
-                        file3 = files[2]
-                    return render_template('result.html', file1=file1, file2=file2, file3=file3, task_id=task_id)
+        msgs = sscg.messages.find( { 'task_id': { '$eq': task_id } } )
+        if msgs.count() == 0:
+            return render_template('processing.html')
+        else:
+            for result_object in msgs[0:1]:
+                if result_object["status"] == "SUCCESS":
+                    files = os.listdir(os.path.join(Settings.outputDir, task_id))
+
+                    if len(files) > 0:
+                        content = []
+                        for file in files:
+                            print(file)
+                            entry = {}
+                            entry['file'] = file
+                            data = None
+                            if file.endswith('.txt'):
+                                with open (os.path.join(Settings.outputDir, task_id, file), "r") as myfile:
+                                    data=myfile.readlines()
+                            entry['content'] = data
+                            content.append(entry)
+                        return render_template('result.html', content=content, task_id=task_id)
+                    else:
+                        return render_template('message.html', message="There are no results available for this task,")
                 else:
-                    return 'There was an error with the application'
-            else:
-                return 'There was an error with the application'
+                    return render_template('message.html', message="There was an error in    the application.")
 
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file = None):
@@ -192,6 +201,7 @@ def register():
     db.session.commit()
     flash('User successfully registered')
     return redirect(url_for('login'))
+
 
 # Route to call the task to compute stable splits
 @myapp.route('/compute_splits' , methods=['GET','POST'])

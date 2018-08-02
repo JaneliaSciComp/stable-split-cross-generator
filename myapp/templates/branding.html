@@ -5,9 +5,12 @@
 </div>
 {% endblock %}
 {% block navbar %}
-    <nav class="navbar navbar-light bg-light justify-content-start">
-      <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
-      <a class="navbar-brand" href="{{ url_for('login') }}"> Login </a>
-      <a class="navbar-brand" href="{{ url_for('home') }}"> Admin </a>
+    <nav class="navbar navbar-light bg-light">
+      <div class="justify-content-start">
+        <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
+        <a class="navbar-brand" href="{{ url_for('login') }}" style="display: none;"> Login </a>
+        <a class="navbar-brand" href="{{ url_for('home') }}" style="display: none;"> Admin </a>
+        <a class="navbar-brand" href="{{ url_for('result') }}"> Results </a>
+      </div>
     </nav>
 {% endblock %}
