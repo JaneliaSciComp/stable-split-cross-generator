@@ -46,12 +46,13 @@ def cleanup_folders(arg):
     path = glob.glob(Settings.outputDir + '/*')
     now  = time.time()
     now_str = datetime.fromtimestamp(now).strftime('%d-%m-%Y %H:%M:%S')
-    print(now_str)
-
     # Delete all folders whichs are older than 10 days
+    taskClient = MongoClient(mongosettings)
+    db = taskClient.stablesplit
     for f in path:
-        if os.stat(f).st_mtime < now - (3 * 86400):
-            print(f)
+        folder = os.path.basename(os.path.normpath(f))
+        msgs = db.messages.find( { 'task_id': { '$eq': folder } } )
+        if msgs.count() > 0 and os.stat(f).st_mtime < now - (3 * 86400):
             shutil.rmtree(f)
 
 @celery.task

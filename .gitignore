@@ -15,4 +15,5 @@ node_modules
 myapp/libs/ImagingEcosystem
 output
 cache
+celerybeat-schedule.db
 .idea/
