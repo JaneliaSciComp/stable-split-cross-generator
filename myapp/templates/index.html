@@ -20,13 +20,13 @@
          <!-- Name field -->
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
-                <label for="exampleFormControlTextarea1">Line Names</label>
+                <label for="line-names">Line Names</label>
                 <textarea class="form-control rounded-0" rows="20" id="line-names"></textarea>
             </div>
          </div>
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
-                <label for="exampleFormControlTextarea2">A-Line</label>
+                <label for="a-line">A-Line</label>
                 <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
             </div>
             <div class="form-group form-inline">
@@ -70,17 +70,15 @@
 
     landing.fetchPolling = function(task_id){
         var url = window.origin + '/polling/' + task_id;
-        console.log(url);
         fetch(url)
             .then(function(response) {
                 return response.json();
             })
             .then(function(myJson) {
-                console.log(myJson);
                 if (myJson === 'SUCCESS') {
                     window.location = window.origin + '/result/' + task_id;
                 } else if (myJson === 'pending') {
-                    console.log('pending');
+                    console.log('result pending');
                     if ($('#working-onit').length === 0) {
                         landing.addSpinningWheel();
                     }
@@ -97,7 +95,6 @@
     }
 
     $(document).ready(function(){
-
         $('#generate-crosses').attr("disabled", "disabled");
 
         // collect all information to be send as POST request to backend

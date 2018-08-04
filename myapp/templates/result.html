@@ -14,7 +14,7 @@
 <div class="container-fluid sscg-container">
     <div class="row sscg-row"></div>
     <div class="row sscg-row">
-        <h5>Download files</h5>
+        <h4>Download files</h4>
     </div>
     <div class="row sscg-row">
         <div class="col-lg-11 col-md-11 col-sm-11">
@@ -33,14 +33,14 @@
     </div>
     <div class="row sscg-row"></div>
     <div class="row sscg-row">
-        <h5>Preview</h5>
+        <h4>Preview</h4>
     </div>
-    <div class="row">
+    <div class="row sscg-row">
         {% if content is not none %}
             {% for c in content %}
                 {% if c.content is not none %}
                     <div class="col-lg-4 col-md-4 col-sm-4">
-                        <h4>{{ c.file }}</h4>
+                        <h5>{{ c.file }}</h5>
                         {% for line in c.content %}
                             {{ line }}
                         {% endfor %}

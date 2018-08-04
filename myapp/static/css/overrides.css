@@ -34,33 +34,40 @@
 }
 
 #working-onit {
-   min-height: 18em;
+   margin-left: -15em;
+   left: 50%;
    background-color: white;
    position: absolute;
    z-index: 3;
-   left:40%;
    top:20%;
-   margin: auto;
-   padding: 30px;
-   border: solid thin #DDDDDD;
+   width: 26em;
+   margin-left: -13em;
+   padding: 20px;
+   border: solid thin #EEEEEE;
+}
+
+#working-onit img {
+   display: block;
+   margin-left: auto;
+   margin-right: auto;
+   width: 80%;
 }
 
 #error-panel {
-   min-height: 18em;
    background-color: white;
    position: absolute;
    z-index: 3;
-   left:40%;
-   top:20%;
-   margin: auto;
-   padding: 30px;
-   border: solid thin #DDDDDD;
+   left: 50%;
+   top: 20%;
+   width: 26em;
+   margin-left: -13em;
+   padding: 20px;
+   border: solid thin #EEEEEE;
 }
 
 .overlay-heading {
-  margin-top: 1em;
-  margin-left: auto;
-  margin-right: auto;
+   margin-top: 1em;
+   text-align: center;
 }
 
 .error-icon {
@@ -71,7 +78,7 @@
 }
 
 #error-close {
-  font-size: 1.5em;
+  font-size: 1.7em;
   float: right;
   margin: 4px 5px 0 0;
   color: #BBB;
