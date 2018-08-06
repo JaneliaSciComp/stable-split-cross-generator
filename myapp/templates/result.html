@@ -22,7 +22,7 @@
                 {% if content is not none %}
                     {% for c in content %}
                         <div class="form-group form-inline">
-                            <a href="{{ url_for('download', task_id=task_id, file=content.file) }}">
+                            <a href="{{ url_for('download', task_id=task_id, file=c.file) }}">
                                 <button type="button" class="form-control btn btn-secondary" name="generate-crosses" id="" value="">{{ c.file }}</button>
                             </a>
                         </div>
