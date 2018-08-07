@@ -5,12 +5,21 @@
         <h5>Available Tasks</h5>
     </div>
     <div class="row sscg-row">
-        <div class="col-lg-6 col-md-6 col-sm-6">
-        {% if directories is not none %}
-            {% for dir in directories %}
-            <div><a href="{{ url_for('result', task_id=dir)}}">{{ dir }}</a></div>
-            {% endfor %}
-        {% endif %}
+        <div class="col-lg-9 col-md-11 col-sm-12">
+            <table class="table table-hover table-bordered table-condensed" style="width:100%">
+                <tr>
+                    <th>Task ID</th>
+                    <th>Date</th>
+                </tr>
+                {% if directories is not none %}
+                    {% for dir in directories %}
+                        <tr>
+                            <td><a href="{{ url_for('result', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
+                            <td>{{ dir['date'] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
         </div>
     </div>
 </div>

@@ -131,7 +131,14 @@ def home():
 def result(task_id = None):
     if task_id == None:
         # list all tasks
-        directories = os.listdir(os.path.join(Settings.outputDir))
+        folders = os.listdir(os.path.join(Settings.outputDir))
+        directories = []
+        for folder in folders:
+            entry = {}
+            entry['folder'] = folder
+            entry['date'] = datetime.fromtimestamp(os.path.getmtime(os.path.join(Settings.outputDir, folder))).strftime('%m-%d-%Y %H:%M:%S')
+            directories.append(entry)
+        directories.sort(key=lambda x: x['date'], reverse=True)
         return render_template('list_directories.html', directories=directories)
     else:
         try:
