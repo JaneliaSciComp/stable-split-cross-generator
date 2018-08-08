@@ -6,7 +6,7 @@
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label class="sscg-label">Job Name: </label>
-                <input type="text" class="form-control sscg-input" name="job-name" id="task-name" value="Gen1_{{ date_now | safe | strftime_short }}">
+                <input type="text" class="form-control sscg-input" name="job-name" id="task-name" value="Gen1-Split">
             </div>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6">
@@ -28,6 +28,10 @@
             <div class="form-group">
                 <label for="a-line">A-Line</label>
                 <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
+            </div>
+           <h5>Upload line names</h5>
+            <div class="form-group">
+             <input id="file-upload" type=file name=file>
             </div>
             <div class="form-group form-inline">
                 <button type="button" class="form-control btn btn-info" name="generate-crosses" id="generate-crosses" value="Generate crosses">Generate crosses</button>
@@ -92,9 +96,30 @@
             .catch(function(error) {
                 console.log("Error: " + error);
             });
-    }
+    },
+
+    landing.loadFile = function(files){
+      if (files.length == 0) {
+        $('#line-names').empty();
+        $('#task-name').val('');
+      }
+      if (files.length > 1) {
+        alert('Please choose only one file.');
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+          $('#line-names').text(e.target.result);
+          $('#task-name').val((files[0].name).split('.txt')[0]);
+      };
+      reader.readAsText(files[0]);
+    },
 
     $(document).ready(function(){
+        $('#file-upload').on('change', function(event) {
+          landing.loadFile(event.target.files);
+        });
+
         $('#generate-crosses').attr("disabled", "disabled");
 
         // collect all information to be send as POST request to backend
