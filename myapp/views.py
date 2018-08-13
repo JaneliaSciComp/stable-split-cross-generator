@@ -57,8 +57,6 @@ def cleanup_folders(arg):
 
 @celery.task
 def compute_splits_task(linenames, aline, task_name, username):
-    print(aline)
-
     gen1_split_generator = os.path.join(Settings.imagingEcoDir, 'gen1_split_generator.py')
     # Call R, allow Rprofile.site file
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
@@ -67,16 +65,18 @@ def compute_splits_task(linenames, aline, task_name, username):
 
     if aline:
         print('2 -- linenames and aline')
-        cmd = "{bin} --aline {aline} --debug --name {username}".format(**{
+        cmd = "{bin} --aline {aline} --debug --name {username} --task {task}".format(**{
             'bin': gen1_split_generator,
             'aline': aline,
             'username': username,
+            'task': task_name,
         })
     else:
         print('3 -- linenames but no aline')
-        cmd = "{bin} --debug --name {username}".format(**{
+        cmd = "{bin} --debug --name {username} --task {task}".format(**{
             'bin': gen1_split_generator,
             'username': username,
+            'task': task_name
         })
 
     task_id = compute_splits_task.request.id
