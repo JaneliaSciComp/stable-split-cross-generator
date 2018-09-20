@@ -46,8 +46,35 @@
     </div>
 </div>
 <script>
-
+    /*
+        Make sure, button to generate crosses is only enabled if a valid user name is entered
+    */
+    var userConfigUrl = null;
+    {%  if userUrl is defined %}
+        userConfigUrl = "{{ userUrl|safe }}";
+    {% endif %}
+</script>
+<script>
     var landing = landing || {};
+
+    landing.fetch = function(url, method, data, params){
+      return fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then(function(response) {
+        if (response.status == 200) {
+          return response.json();
+        }
+        throw new Error('Unexpected status code: ' +  response.status);
+      });
+    };
+
+    landing.handleError = function(err){
+        console.log(err);
+    };
 
     // show an error string which disappears on its own
     landing.addSpinningWheel = function() {
@@ -115,12 +142,45 @@
       reader.readAsText(files[0]);
     },
 
+    landing.checkUserName = function(userName){
+        const userRequest = new Request(userConfigUrl + '/' + userName, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                },
+            });
+
+            fetch(userRequest)
+            .then(function(response) {
+                if (response.status == 200) {
+                    return response.json();
+                }
+                $('#generate-crosses').attr("disabled", "disabled");
+                throw new Error("Unexpected response status: " + response.status);
+            })
+            .then(function(data) {
+                if (data['config'] && data['config']['id']) {
+                    // valid user found
+                    $('#generate-crosses').removeAttr('disabled');
+                }
+            })
+            .catch(function(error) {
+                console.log("Error: " + error);
+            });
+    },
+
     $(document).ready(function(){
         $('#file-upload').on('change', function(event) {
           landing.loadFile(event.target.files);
         });
 
-        $('#generate-crosses').attr("disabled", "disabled");
+        var initialName = $('#user-name')[0].value;
+        if (initialName) {
+            landing.checkUserName(initialName.toLowerCase());
+        }
+        else {
+            $('#generate-crosses').attr("disabled", "disabled");
+        }
 
         // collect all information to be send as POST request to backend
         $('#generate-crosses').on('click', function(event){
@@ -132,7 +192,7 @@
             var userInput = $('#user-name')[0];
             var user = null;
             if (userInput) {
-                user = userInput.value;
+                user = userInput.value.toLowerCase();
             }
             const jsonData = JSON.stringify(data);
             const url = window.origin + '/compute_splits/' + user;
@@ -169,41 +229,9 @@
             });
         })
 
-        /*
-            Make sure, button to generate crosses is only enabled if a valid user name is entered
-        */
-        var userConfigUrl = null;
-        {%  if userUrl is defined %}
-            userConfigUrl = "{{ userUrl|safe }}";
-        {% endif %}
-
         $('#user-name').on('keyup', function(event){
-            var checkName = this.value;
-
-            const userRequest = new Request(userConfigUrl + '/' + checkName, {
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json'
-                },
-            });
-
-            fetch(userRequest)
-            .then(function(response) {
-                if (response.status == 200) {
-                    return response.json();
-                }
-                $('#generate-crosses').attr("disabled", "disabled");
-                throw new Error("Unexpected response status: " + response.status);
-            })
-            .then(function(data) {
-                if (data['config'] && data['config']['id']) {
-                    // valid user found
-                    $('#generate-crosses').removeAttr('disabled');
-                }
-            })
-            .catch(function(error) {
-                console.log("Error: " + error);
-            });
+            var checkName = this.value.toLowerCase();
+            landing.checkUserName(checkName);
         })
     });
 </script>

@@ -45,6 +45,11 @@ $ deactivate
 
 ## Development
 
+Start rabbitmq server, in Ubuntu with:
+```bash
+sudo rabbitmqctl start
+```
+
 To start celery from the command line, run
 
 ```bash
