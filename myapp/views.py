@@ -115,12 +115,18 @@ def compute_splits_task(linenames, aline, task_name, username):
 
 
 @myapp.route('/', methods=['GET','POST'])
-def home():
+@myapp.route('/uname/<username>')
+@myapp.route('/uname/<username>/lnames/<linenames>')
+@myapp.route('/uname/<username>/lnames/<linenames>/aline/<aline>', methods=['GET','POST'])
+def home(username = None, linenames = None, aline = None):
     # if not session.get('logged_in'):
     #     form = LoginForm()
     #     return render_template('login.html', form=form)
-    return render_template('index.html')
-
+    return render_template('index.html',
+            username = username,
+            linenames = linenames,
+            aline = aline
+        )
 
 # this function is called within the POST success as a change of window.locate => no POST request
 @myapp.route('/result/<task_id>/' , methods=['GET'])

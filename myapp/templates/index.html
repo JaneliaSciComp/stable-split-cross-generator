@@ -12,7 +12,11 @@
         <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label class="sscg-label">User Name: </label>
-                <input type="text" class="form-control sscg-input" name="user-name" id="user-name" value="">
+                {% if username %}
+                    <input type="text" class="form-control sscg-input" name="user-name" id="user-name" value="{{ username }}">
+                {% else %}
+                    <input type="text" class="form-control sscg-input" name="user-name" id="user-name" value="">
+                {% endif %}
             </div>
         </div>
     </div>
@@ -21,13 +25,21 @@
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="line-names">Line Names</label>
-                <textarea class="form-control rounded-0" rows="20" id="line-names"></textarea>
+                {% if linenames %}
+                    <textarea class="form-control rounded-0" rows="20" id="line-names">{{ linenames | replace(" ", "\n")}}</textarea>
+                {% else %}
+                    <textarea class="form-control rounded-0" rows="20" id="line-names"></textarea>
+                {% endif %}
             </div>
          </div>
          <div class="col-lg-6 col-md-6 col-sm-6">
             <div class="form-group">
                 <label for="a-line">A-Line</label>
-                <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
+                {% if aline %}
+                    <textarea class="form-control rounded-0" rows="1" id="a-line">{{ aline }}</textarea>
+                {% else %}
+                    <textarea class="form-control rounded-0" rows="1" id="a-line"></textarea>
+                {% endif %}
             </div>
            <h5>Upload line names</h5>
             <div class="form-group">
