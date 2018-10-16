@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, request, abort, send_from_
 from datetime import datetime
 from celery import Celery
 from celery.schedules import crontab
+from pprint import pprint
 from myapp import myapp
 from myapp.settings import Settings
 from myapp.forms import LoginForm, RegisterForm
@@ -56,7 +57,7 @@ def cleanup_folders(arg):
             shutil.rmtree(f)
 
 @celery.task
-def compute_splits_task(linenames, aline, task_name, username):
+def compute_splits_task(linenames, aline, task_name, show_all, username):
     gen1_split_generator = os.path.join(Settings.imagingEcoDir, 'gen1_split_generator.py')
     # Call R, allow Rprofile.site file
     # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
@@ -65,18 +66,20 @@ def compute_splits_task(linenames, aline, task_name, username):
 
     if aline:
         print('2 -- linenames and aline')
-        cmd = "{bin} --aline {aline} --debug --name {username} --task {task}".format(**{
+        cmd = "{bin} --aline {aline} --debug --name {username} --task {task}{show-all}".format(**{
             'bin': gen1_split_generator,
             'aline': aline,
             'username': username,
             'task': task_name,
+            'show-all': ' --all' if show_all else ''
         })
     else:
         print('3 -- linenames but no aline')
-        cmd = "{bin} --debug --name {username} --task {task}".format(**{
+        cmd = "{bin} --debug --name {username} --task {task}{show-all}".format(**{
             'bin': gen1_split_generator,
             'username': username,
-            'task': task_name
+            'task': task_name,
+            'show-all': ' --all' if show_all else ''
         })
 
     task_id = compute_splits_task.request.id
@@ -209,7 +212,7 @@ def register():
     if request.method == 'GET':
         form = RegisterForm()
         return render_template('register.html', form=form)
-    user = User(request.form['username'] , request.form['password'],request.form['email'])
+    user = User(request.form['username'], request.form['password'], request.form['email'])
     db.session.add(user)
     db.session.commit()
     flash('User successfully registered')
@@ -226,6 +229,7 @@ def compute_splits(username = None):
             data['lnames'],
             data['aline'],
             data['task_name'],
+            data['show-all'],
             username
         )
 
