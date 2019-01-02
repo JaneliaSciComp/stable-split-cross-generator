@@ -12,7 +12,6 @@ var config = {
 plan.target('local', {
   host: 'localhost',
   username: config.username,
-  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
@@ -23,7 +22,6 @@ plan.target('local', {
 plan.target('production', {
   host: 'stable-split',
   username: config.username,
-  privateKey: '/Users/kazimiersa/.ssh/id_rsa_deploy',
   agent: process.env.SSH_AUTH_SOCK
 },
 {
