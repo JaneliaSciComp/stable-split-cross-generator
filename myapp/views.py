@@ -45,8 +45,8 @@ def setup_periodic_tasks(sender, **kwargs):
 @celery.task
 def cleanup_folders(arg):
     path = glob.glob(Settings.outputDir + '/*')
-    now  = time.time()
-    now_str = datetime.fromtimestamp(now).strftime('%d-%m-%Y %H:%M:%S')
+    now = time.time()
+
     # Delete all folders whichs are older than 10 days
     taskClient = MongoClient(mongosettings)
     db = taskClient.stablesplit
@@ -59,9 +59,6 @@ def cleanup_folders(arg):
 @celery.task
 def compute_splits_task(linenames, aline, task_name, show_all, username):
     gen1_split_generator = os.path.join(Settings.imagingEcoDir, 'gen1_split_generator.py')
-    # Call R, allow Rprofile.site file
-    # printf "55D12\n60b11\n40c01" | ./gen1_split_generator.py --deb
-    # linenames = None
     cmd = None
 
     if aline:
@@ -92,7 +89,6 @@ def compute_splits_task(linenames, aline, task_name, show_all, username):
     pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8', cwd=output_dir)
     stdout, stderr = pipe.communicate(input=linenames)
 
-    #subprocess.call([cmd_dir])
     client_fork = MongoClient(mongosettings)
     sscg_fork = client_fork.stablesplit
 
@@ -122,13 +118,10 @@ def compute_splits_task(linenames, aline, task_name, show_all, username):
 @myapp.route('/uname/<username>/lnames/<linenames>')
 @myapp.route('/uname/<username>/lnames/<linenames>/aline/<aline>', methods=['GET','POST'])
 def home(username = None, linenames = None, aline = None):
-    # if not session.get('logged_in'):
-    #     form = LoginForm()
-    #     return render_template('login.html', form=form)
     return render_template('index.html',
-            username = username,
-            linenames = linenames,
-            aline = aline
+            username=username,
+            linenames=linenames,
+            aline=aline
         )
 
 # this function is called within the POST success as a change of window.locate => no POST request
@@ -243,7 +236,7 @@ def compute_splits(username = None):
 @myapp.route('/polling/<task_id>' , methods=['GET'])
 def polling(task_id):
     try:
-        messages = sscg.messages.find({ 'task_id': { "$eq": task_id }})
+        messages = sscg.messages.find({'task_id': {"$eq": task_id}})
         if messages.count() == 1: # task ran successfully
             message = messages.next()
             return jsonify(message['status'])
