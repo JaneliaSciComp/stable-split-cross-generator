@@ -171,8 +171,39 @@ def result(task_id=None):
         except:
             return render_template('message.html', message="Could not connect to database.")
 
-@myapp.route('/result/<task_id>/' , methods=['GET'])
-def result(task_id=None):
+@myapp.route('/detail/<task_id>/' , methods=['GET'])
+def detail(task_id=None):
+    try:
+        msgs = sscg.messages.find({'task_id': {'$eq': task_id}})
+        if msgs.count() == 0:
+            return render_template('processing.html')
+        else:
+            for result_object in msgs[0:1]:
+                if result_object["status"] == "SUCCESS":
+                    files = os.listdir(os.path.join(Settings.outputDir, task_id))
+
+                    if len(files) > 0:
+                        content = []
+                        for file in files:
+                            print(file)
+                            entry = {}
+                            entry['file'] = file
+                            data = None
+                            if file.endswith('.txt'):
+                                with open(os.path.join(Settings.outputDir, task_id, file), "r") as myfile:
+                                    data = myfile.readlines()
+                            entry['content'] = data
+                            content.append(entry)
+                        return render_template('result.html', content=content, task_id=task_id)
+                    else:
+                        return render_template('message.html', message="There are no results available for this task,")
+                else:
+                    return render_template(
+                        'message.html',
+                        message="There was an error in the application. No files have been generated."
+                    )
+    except:
+        return render_template('message.html', message="Could not connect to database.")
 
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file = None):

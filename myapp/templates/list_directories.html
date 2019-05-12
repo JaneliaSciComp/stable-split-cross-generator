@@ -15,7 +15,7 @@
                 {% if directories is not none %}
                     {% for dir in directories %}
                         <tr>
-                            <td><a href="{{ url_for('result', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
+                            <td><a href="{{ url_for('detail', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
                             <td>{{ dir['date'] }}</td>
                             <td><i class="fa fa-info-circle output-icon" aria-hidden="true"></i></td>
                         </tr>
