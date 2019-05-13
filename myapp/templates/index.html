@@ -66,7 +66,7 @@
         Make sure, button to generate crosses is only enabled if a valid user name is entered
     */
     var userConfigUrl = null;
-    {%  if userUrl is defined %}
+    {% if userUrl is defined %}
         userConfigUrl = "{{ userUrl|safe }}";
     {% endif %}
 </script>

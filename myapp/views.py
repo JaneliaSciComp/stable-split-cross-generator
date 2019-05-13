@@ -86,7 +86,7 @@ def compute_splits_task(linenames, aline, task_name, show_all, username):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, encoding='utf8', cwd=output_dir)
+    pipe = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8', cwd=output_dir)
     stdout, stderr = pipe.communicate(input=linenames)
 
     client_fork = MongoClient(mongosettings)
@@ -99,9 +99,10 @@ def compute_splits_task(linenames, aline, task_name, show_all, username):
             'task_name': task_name,
             'date': datetime.now(),
             'message': stdout,
-            'status': 'ERROR'
+            'status': 'ERROR',
+            'output': stderr
             })
-        raise Exception(stdout)
+        raise Exception(stderr)
     else:
         print('Success')
         sscg_fork.messages.insert_one({
@@ -109,7 +110,8 @@ def compute_splits_task(linenames, aline, task_name, show_all, username):
             'task_name': task_name,
             'date': datetime.now(),
             'message': 'success',
-            'status': 'SUCCESS'
+            'status': 'SUCCESS',
+            'output': stdout
             })
 
 
@@ -125,9 +127,9 @@ def home(username = None, linenames = None, aline = None):
         )
 
 # this function is called within the POST success as a change of window.locate => no POST request
-@myapp.route('/result/<task_id>/' , methods=['GET'])
+@myapp.route('/result/output/<task_id>/', methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
-def result(task_id = None):
+def result(task_id=None):
     if task_id == None:
         # list all tasks
         folders = os.listdir(os.path.join(Settings.outputDir))
@@ -168,6 +170,9 @@ def result(task_id = None):
                         return render_template('message.html', message="There was an error in the application. No files have been generated.")
         except:
             return render_template('message.html', message="Could not connect to database.")
+
+@myapp.route('/result/<task_id>/' , methods=['GET'])
+def result(task_id=None):
 
 @myapp.route("/download/<task_id>/<file>")
 def download(task_id, file = None):
