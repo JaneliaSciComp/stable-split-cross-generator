@@ -13,24 +13,23 @@
                     <th></th>
                 </tr>
                 {% if directories is not none %}
-                    {% for dir in directories %}
-                        <tr>
-                            <td><a href="{{ url_for('detail', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
-                            <td>{{ dir['date'] }}</td>
-                            <td>
-                                    {% if output is not none and task_id == dir['folder'] %}
-                                        <a href=""><i class="fa fa-info-circle output-icon" aria-hidden="true"></i></a>
-                                        <br/><span>{{ output }}</span>
-                                    {% else %}
-                                        <a href=""><i class="fa fa-info-circle output-icon" aria-hidden="true"></i></a>
-                                    {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                  {% for dir in directories %}
+                  <tr class="task-row">
+                      <td class="task_id"><a href="{{ url_for('detail', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
+                      <td>{{ dir['date'] }}</td>
+                      <td>
+                          <a class="output-icon" href="{{ url_for('result', task_id=dir['folder'])}}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                      </td>
+                      <td>
+                          {% if output is not none and task_id == dir['folder'] %}
+                              <span>{{ output }}</span>
+                          {% endif %}
+                      </td>
+                  </tr>
+                  {% endfor %}
                 {% endif %}
             </table>
         </div>
     </div>
 </div>
-<script src="{{url_for('static', filename='js/result.js')}}"></script>
 {% endblock %}
