@@ -106,3 +106,7 @@
 .output-column {
     width: 20em;
 }
+
+.navbar-brand {
+  font-size: 1.1em;
+}

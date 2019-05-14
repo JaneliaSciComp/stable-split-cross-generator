@@ -4,13 +4,20 @@
   <h1>Gen1 Split Generator {{ version }}</h1>
 </div>
 {% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-light bg-light">
       <div class="justify-content-start">
-        <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
-        <a class="navbar-brand" href="{{ url_for('login') }}" style="display: none;"> Login </a>
-        <a class="navbar-brand" href="{{ url_for('home') }}" style="display: none;"> Admin </a>
-        <a class="navbar-brand" href="{{ url_for('result') }}"> Results </a>
+        {% if directories is defined or task_id is defined %}
+          <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
+          <b><a class="navbar-brand" href="{{ url_for('result') }}">Results</a></b>
+        {% elif request.path == '/' %}
+          <b><a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a></b>
+          <a class="navbar-brand" href="{{ url_for('result') }}"> Results </a>
+        {% else %}
+          <a class="navbar-brand navbar-brand-left" href="{{ url_for('home') }}"> Home </a>
+          <a class="navbar-brand" href="{{ url_for('result') }}"> Results </a>
+        {% endif %}
       </div>
     </nav>
 {% endblock %}
