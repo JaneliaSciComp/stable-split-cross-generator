@@ -149,7 +149,6 @@ def result(task_id=None):
                 return render_template('processing.html')
             else:
                 for result_object in msgs[0:1]:
-                    pprint(result_object)
                     if 'output' in result_object:
                         output = result_object["output"]
 
