@@ -127,7 +127,7 @@ def home(username = None, linenames = None, aline = None):
         )
 
 # this function is called within the POST success as a change of window.locate => no POST request
-@myapp.route('/result/output/<task_id>/', methods=['GET'])
+@myapp.route('/result/<task_id>/', methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id=None):
 

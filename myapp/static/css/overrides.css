@@ -102,3 +102,7 @@
 .output-icon {
     color: #42427d;
 }
+
+.output-column {
+    width: 20em;
+}

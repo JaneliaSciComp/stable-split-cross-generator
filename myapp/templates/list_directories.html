@@ -20,7 +20,7 @@
                       <td>
                           <a class="output-icon" href="{{ url_for('result', task_id=dir['folder'])}}"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
                       </td>
-                      <td>
+                      <td class="output-column">
                           {% if output is not none and task_id == dir['folder'] %}
                               <span>{{ output }}</span>
                           {% endif %}
