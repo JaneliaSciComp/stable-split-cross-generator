@@ -130,46 +130,39 @@ def home(username = None, linenames = None, aline = None):
 @myapp.route('/result/output/<task_id>/', methods=['GET'])
 @myapp.route('/result', methods=['GET','POST'])
 def result(task_id=None):
-    if task_id == None:
-        # list all tasks
-        folders = os.listdir(os.path.join(Settings.outputDir))
-        directories = []
-        for folder in folders:
-            entry = {}
-            entry['folder'] = folder
-            entry['date'] = datetime.fromtimestamp(os.path.getmtime(os.path.join(Settings.outputDir, folder))).strftime('%m-%d-%Y %H:%M:%S')
-            directories.append(entry)
-        directories.sort(key=lambda x: x['date'], reverse=True)
-        return render_template('list_directories.html', directories=directories)
-    else:
+
+    # list all tasks
+    folders = os.listdir(os.path.join(Settings.outputDir))
+    directories = []
+    for folder in folders:
+        entry = {}
+        entry['folder'] = folder
+        entry['date'] = datetime.fromtimestamp(os.path.getmtime(os.path.join(Settings.outputDir, folder))).strftime('%m-%d-%Y %H:%M:%S')
+        directories.append(entry)
+    directories.sort(key=lambda x: x['date'], reverse=True)
+    output = None
+
+    if task_id != None:
         try:
-            msgs = sscg.messages.find( { 'task_id': { '$eq': task_id } } )
+            msgs = sscg.messages.find({'task_id': {'$eq': task_id}})
             if msgs.count() == 0:
                 return render_template('processing.html')
             else:
                 for result_object in msgs[0:1]:
-                    if result_object["status"] == "SUCCESS":
-                        files = os.listdir(os.path.join(Settings.outputDir, task_id))
+                    pprint(result_object)
+                    if 'output' in result_object:
+                        output = result_object["output"]
 
-                        if len(files) > 0:
-                            content = []
-                            for file in files:
-                                print(file)
-                                entry = {}
-                                entry['file'] = file
-                                data = None
-                                if file.endswith('.txt'):
-                                    with open (os.path.join(Settings.outputDir, task_id, file), "r") as myfile:
-                                        data=myfile.readlines()
-                                entry['content'] = data
-                                content.append(entry)
-                            return render_template('result.html', content=content, task_id=task_id)
-                        else:
-                            return render_template('message.html', message="There are no results available for this task,")
-                    else:
-                        return render_template('message.html', message="There was an error in the application. No files have been generated.")
-        except:
+        except Exception as e:
+            print(e)
             return render_template('message.html', message="Could not connect to database.")
+
+    return render_template(
+        'list_directories.html',
+        directories=directories,
+        task_id=task_id,
+        output=output
+    )
 
 @myapp.route('/detail/<task_id>/' , methods=['GET'])
 def detail(task_id=None):
@@ -206,7 +199,7 @@ def detail(task_id=None):
         return render_template('message.html', message="Could not connect to database.")
 
 @myapp.route("/download/<task_id>/<file>")
-def download(task_id, file = None):
+def download(task_id, file=None):
     path = os.path.join(Settings.outputDir, task_id)
     return send_from_directory(
             path,

@@ -15,6 +15,9 @@
                 {% if directories is not none %}
                     {% for dir in directories %}
                         <tr>
+                            {% if task_id == dir['folder'] %}
+                                current
+                            {% endif %}
                             <td><a href="{{ url_for('detail', task_id=dir['folder'])}}">{{ dir['folder'] }}</a></td>
                             <td>{{ dir['date'] }}</td>
                             <td><a href=""><i class="fa fa-info-circle output-icon" aria-hidden="true"></i></a></td>
