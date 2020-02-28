@@ -55,18 +55,15 @@ Start rabbitmq server, in Ubuntu with:
 sudo rabbitmqctl start
 ```
 
-To start celery from the command line, run
-
-```bash
-run_celery.py
-```
-
-or run the following commands:
+To start celery from the command line, run the following commands within the project folder:
 
 ```bash
 $ celery -A myapp.views worker -l info
 $ celery -A myapp.views beat -l info
 ```
+
+The first celery command waits for line names to be processed, the second command periodically
+checks whether folders within the output directory have to be deleted, because they are older than 3 days.
 
 ## Setup
 
