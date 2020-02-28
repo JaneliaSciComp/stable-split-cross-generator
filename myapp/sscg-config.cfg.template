@@ -1,12 +1,6 @@
 DEBUG=False
 SECRET_KEY='the_very_secret_key'
 CACHE_TYPE='simple'
-LDAP_HOST = [ldap host url]
-LDAP_DOMAIN = [ldap domain]
-LDAP_SEARCH_BASE = 'OU=[..],DC=[..]'
-LDAP_LOGIN_VIEW = 'login'
-LDAP_PROVIDER_URL = '[ldap provider url]'
-LDAP_PROTOCOL_VERSION = 3
 MONGODB_SETTINGS = {
     'db': 'split-generator',
     'host': [mongo host ulr],
