@@ -1,5 +1,7 @@
 # stable-split-cross-generator
 
+The split generator is a website which runs an algorithm to create output files of available crosses of fly lines.
+
 Make sure, your python is version 3.5 or higher and your pip is using this correct python:
 
 ```bash
@@ -28,7 +30,10 @@ Install the requirements:
 
 ```bash
 $ pip install -r requirements.txt
+
 ```
+
+Within the folder myapp, there are two template settings files. Copy them to create the two files `sscg-config.cfg` and `settings.py` within the same folder.
 
 With
 

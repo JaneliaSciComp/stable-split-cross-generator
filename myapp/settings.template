@@ -1,0 +1,5 @@
+class Settings:
+    serverInfo = {'IP': '127.0.0.1', 'port' : [custom port], 'fullAddress': '[IP]:[port]'}
+    users = [path to endpoint for user information]
+    outputDir = [path to directory to store output files]
+    imagingEcoDir = [path to directory with script to run]
